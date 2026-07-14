@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Menu, Search, X, LogOut, Settings } from "lucide-react";
-import { BRAND_NAME } from "@hypelive/domain";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { Button } from "@/components/ui/Button";
 import { OfflineBanner } from "@/components/ui/OfflineBanner";
 import { NavigationProgress } from "@/components/layout/NavigationProgress";
@@ -51,12 +51,7 @@ export function StreamingShell({ children }: { children: React.ReactNode }) {
             <Menu className="size-5" />
           </button>
 
-          <Link
-            href="/"
-            className="shrink-0 text-lg font-bold tracking-tight text-text-primary sm:text-xl"
-          >
-            {BRAND_NAME}
-          </Link>
+          <BrandLogo href="/" size="md" />
 
           <nav
             className="ml-2 hidden items-center gap-1 lg:flex"
@@ -162,7 +157,7 @@ export function StreamingShell({ children }: { children: React.ReactNode }) {
           />
           <aside className="absolute inset-y-0 left-0 flex w-72 translate-x-0 flex-col bg-charcoal p-4 shadow-deep transition-transform duration-normal ease-enter">
             <div className="mb-4 flex items-center justify-between">
-              <span className="font-bold">{BRAND_NAME}</span>
+              <BrandLogo href={undefined} size="sm" />
               <button
                 type="button"
                 className="btn-press p-2 text-text-muted"
@@ -211,7 +206,7 @@ export function StreamingShell({ children }: { children: React.ReactNode }) {
 
       <footer className="border-t border-border-subtle bg-ink">
         <div className="mx-auto flex max-w-[1920px] flex-wrap items-center justify-between gap-3 px-4 py-6 text-sm text-text-muted sm:px-8 lg:px-12">
-          <span className="font-medium text-text-secondary">{BRAND_NAME}</span>
+          <BrandLogo href="/home" size="sm" />
           <nav className="flex flex-wrap gap-4">
             <Link href="/home" className="hover:text-text-primary">
               Inicio

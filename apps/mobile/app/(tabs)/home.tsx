@@ -4,8 +4,8 @@ import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { homeFeedQueryOptions, mockStreams } from "@hypelive/api";
-import { BRAND_NAME } from "@hypelive/domain";
 import { colors, spacing } from "@hypelive/design-tokens";
+import { BrandLogo } from "../../src/components/BrandLogo";
 import { ChannelCard } from "../../src/components/ChannelCard";
 import { ContentCard } from "../../src/components/ContentCard";
 import { EmptyState } from "../../src/components/EmptyState";
@@ -43,7 +43,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={["left", "right"]}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.brand}>{BRAND_NAME}</Text>
+        <BrandLogo size={28} />
         <Text style={styles.eyebrow}>Inicio</Text>
 
         {isError ? (
@@ -221,11 +221,6 @@ function Row({ children }: { children: ReactNode }) {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.ink },
   content: { padding: spacing[4], paddingBottom: spacing[10] },
-  brand: {
-    color: colors.textPrimary,
-    fontSize: 28,
-    fontWeight: "700",
-  },
   eyebrow: {
     color: colors.textSecondary,
     marginBottom: spacing[5],

@@ -8,7 +8,7 @@ const sans = Source_Sans_3({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   },
   description:
     "HYPE — plataforma de streaming en vivo. Canales, programas y transmisiones.",
+  icons: {
+    icon: "/brand-mark.svg",
+  },
 };
 
 export default function RootLayout({

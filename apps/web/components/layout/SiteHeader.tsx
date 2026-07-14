@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BRAND_NAME } from "@hypelive/domain";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { useAuth } from "@/providers/AuthProvider";
 
 /** Compact header for auth pages only. */
@@ -11,9 +11,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-[200] border-b border-white/5 bg-ink/95">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:h-16 sm:px-6">
-        <Link href="/home" className="text-lg font-bold tracking-tight text-text-primary">
-          {BRAND_NAME}
-        </Link>
+        <BrandLogo href="/home" size="md" />
         <div className="flex items-center gap-2">
           {user ? (
             <button

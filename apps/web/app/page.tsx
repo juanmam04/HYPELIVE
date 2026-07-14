@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { homeFeedQueryOptions } from "@hypelive/api";
-import { APP_NAME } from "@hypelive/domain";
 import { StreamingShell } from "@/components/layout/StreamingShell";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { ContentCard } from "@/components/content/ContentCard";
 import { ChannelCard } from "@/components/content/ChannelCard";
 import { ProgramCard } from "@/components/content/ProgramCard";
@@ -88,11 +88,9 @@ export default function LandingPage() {
 
             <div className="relative mx-auto flex h-full max-w-[1920px] flex-col justify-end px-4 pb-8 pt-10 sm:px-8 sm:pb-10 lg:px-12 lg:pb-12">
               <div className="max-w-2xl">
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-3">
                   {featured?.status === "live" ? <LiveBadge /> : null}
-                  <span className="text-sm font-semibold tracking-wide text-text-secondary">
-                    {APP_NAME}
-                  </span>
+                  <BrandLogo href={undefined} size="sm" />
                 </div>
 
                 <h1 className="mt-3 text-3xl font-bold leading-tight text-text-primary sm:text-4xl lg:text-5xl">

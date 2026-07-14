@@ -180,31 +180,58 @@ export const breakpoints = {
   "2xl": 1536,
 } as const;
 
+/** Duration tokens in ms — prefer `motion` for new work. */
 export const durations = {
-  instant: 0,
-  fast: 150,
-  normal: 180,
-  slow: 200,
+  instant: 80,
+  fast: 140,
+  normal: 200,
+  slow: 280,
+  page: 320,
+  /** @deprecated use durations.page */
   slower: 280,
 } as const;
 
 export const easings = {
-  standard: "cubic-bezier(0.4, 0, 0.2, 1)",
+  /** Spec: motion.easingStandard */
+  standard: "cubic-bezier(0.2, 0, 0, 1)",
+  enter: "cubic-bezier(0, 0, 0.2, 1)",
+  exit: "cubic-bezier(0.4, 0, 1, 1)",
+  /** Aliases */
   emphasized: "cubic-bezier(0.2, 0, 0, 1)",
   decelerate: "cubic-bezier(0, 0, 0.2, 1)",
   accelerate: "cubic-bezier(0.4, 0, 1, 1)",
+} as const;
+
+/** Canonical motion system for polish / microinteractions. */
+export const motion = {
+  instant: durations.instant,
+  fast: durations.fast,
+  normal: durations.normal,
+  slow: durations.slow,
+  page: durations.page,
+  easingStandard: easings.standard,
+  easingEnter: easings.enter,
+  easingExit: easings.exit,
+  cardHoverScale: 1.015,
+  cardPressedScale: 0.985,
+  tvFocusScale: 1.04,
+  imageZoomHover: 1.025,
+  pageTranslateY: 6,
+  heroTranslateY: 8,
+  messageTranslateY: 4,
 } as const;
 
 export const touchTargets = {
   min: 44,
   comfortable: 48,
   tv: 56,
+  webMin: 40,
 } as const;
 
 export const focusScale = {
-  default: 1.02,
+  default: 1.04,
   strong: 1.04,
-  subtle: 1.01,
+  subtle: 1.015,
 } as const;
 
 export const tokens = {
@@ -221,6 +248,7 @@ export const tokens = {
   breakpoints,
   durations,
   easings,
+  motion,
   touchTargets,
   focusScale,
 } as const;

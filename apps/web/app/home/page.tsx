@@ -8,17 +8,27 @@ import { ContentCard } from "@/components/content/ContentCard";
 import { ChannelCard } from "@/components/content/ChannelCard";
 import { ProgramCard } from "@/components/content/ProgramCard";
 import { EpisodeCard } from "@/components/content/EpisodeCard";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { ContentRow } from "@/components/ui/ContentRow";
+import {
+  HeroSkeleton,
+  StreamRowSkeleton,
+  ChannelRowSkeleton,
+  ProgramRowSkeleton,
+  EpisodeRowSkeleton,
+  ScheduleSkeleton,
+} from "@/components/ui/ContentSkeletons";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LiveBadge } from "@/components/ui/LiveBadge";
 import { Button } from "@/components/ui/Button";
+import { ReminderButton } from "@/components/ui/FollowButton";
 import { apiOptions } from "@/lib/api-options";
 import {
   formatScheduleDate,
   formatScheduleTime,
   normalizeHomeFeed,
 } from "@/lib/models";
+import { EMPTY_STATE } from "@hypelive/domain";
 
 function SectionHeader({
   title,
@@ -71,12 +81,14 @@ export default function HomePage() {
   return (
     <StreamingShell>
       {query.isLoading ? (
-        <div className="space-y-4 px-4 pt-0 sm:px-8 lg:px-12">
-          <Skeleton className="h-[58vh] w-full max-h-[580px]" />
-          <div className="flex gap-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-36 w-56 shrink-0" />
-            ))}
+        <div className="space-y-8">
+          <HeroSkeleton />
+          <div className="space-y-8 px-4 sm:px-8 lg:px-12">
+            <StreamRowSkeleton />
+            <ChannelRowSkeleton />
+            <ProgramRowSkeleton />
+            <EpisodeRowSkeleton />
+            <ScheduleSkeleton />
           </div>
         </div>
       ) : null}
@@ -101,7 +113,7 @@ export default function HomePage() {
             <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent" />
 
             <div className="relative mx-auto flex h-full max-w-[1920px] flex-col justify-end px-4 pb-8 pt-10 sm:px-8 sm:pb-10 lg:px-12 lg:pb-12">
-              <div className="max-w-2xl">
+              <div className="hero-enter max-w-2xl">
                 <div className="flex flex-wrap items-center gap-2">
                   {featured?.status === "live" ? <LiveBadge /> : null}
                   {featured?.channel?.name ? (
@@ -126,7 +138,7 @@ export default function HomePage() {
                 </p>
 
                 {featured ? (
-                  <div className="mt-5 flex flex-wrap gap-3">
+                  <div className="hero-enter-delay mt-5 flex flex-wrap gap-3">
                     <Link href={`/live/${featured.id}`}>
                       <Button size="lg">Ver en vivo</Button>
                     </Link>
@@ -145,18 +157,22 @@ export default function HomePage() {
             <div className="mx-auto max-w-[1920px]">
               <SectionHeader title="En vivo ahora" href="/en-vivo" />
               {liveForRow.length === 0 ? (
-                <EmptyState title="Nadie está en vivo" />
+                <EmptyState
+                  title={EMPTY_STATE.noLiveStreams}
+                  description="Mirá las próximas transmisiones más abajo."
+                />
               ) : (
-                <div className="flex gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <ContentRow ariaLabel="En vivo ahora">
                   {liveForRow.map((stream) => (
                     <div
                       key={stream.id}
-                      className="w-[200px] shrink-0 sm:w-[220px] lg:w-[240px]"
+                      role="listitem"
+                      className="w-[200px] shrink-0 snap-start sm:w-[220px] lg:w-[240px]"
                     >
                       <ContentCard item={stream} href={`/live/${stream.id}`} />
                     </div>
                   ))}
-                </div>
+                </ContentRow>
               )}
             </div>
           </section>
@@ -177,33 +193,35 @@ export default function HomePage() {
 
             <section>
               <SectionHeader title="Programas populares" href="/programas" />
-              <div className="flex gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-3 sm:overflow-visible lg:grid-cols-4 xl:grid-cols-5">
-                {feed.popularPrograms.slice(0, 5).map((program) => (
+              <ContentRow ariaLabel="Programas populares">
+                {feed.popularPrograms.slice(0, 8).map((program) => (
                   <div
                     key={program.id}
-                    className="w-[200px] shrink-0 sm:w-auto"
+                    role="listitem"
+                    className="w-[200px] shrink-0 snap-start sm:w-[220px]"
                   >
                     <ProgramCard program={program} />
                   </div>
                 ))}
-              </div>
+              </ContentRow>
             </section>
 
             <section>
               <SectionHeader title="Episodios recientes" />
               {feed.recentEpisodes.length === 0 ? (
-                <EmptyState title="Sin episodios recientes" />
+                <EmptyState title={EMPTY_STATE.programNoEpisodes} />
               ) : (
-                <div className="flex gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 sm:overflow-visible">
-                  {feed.recentEpisodes.slice(0, 5).map((episode) => (
+                <ContentRow ariaLabel="Episodios recientes">
+                  {feed.recentEpisodes.slice(0, 8).map((episode) => (
                     <div
                       key={episode.id}
-                      className="w-[200px] shrink-0 sm:w-auto"
+                      role="listitem"
+                      className="w-[200px] shrink-0 snap-start sm:w-[220px]"
                     >
                       <EpisodeCard episode={episode} />
                     </div>
                   ))}
-                </div>
+                </ContentRow>
               )}
             </section>
 
@@ -215,10 +233,13 @@ export default function HomePage() {
                 <div className="overflow-hidden rounded border border-border-subtle bg-slate">
                   <ul className="divide-y divide-border-subtle">
                     {feed.todaySchedule.slice(0, 6).map((stream) => (
-                      <li key={stream.id}>
+                      <li
+                        key={stream.id}
+                        className="flex flex-col gap-2 px-4 py-3 transition-colors hover:bg-elevated sm:flex-row sm:items-center sm:gap-6"
+                      >
                         <Link
                           href={`/live/${stream.id}`}
-                          className="flex flex-col gap-1 px-4 py-3 transition-colors hover:bg-elevated sm:flex-row sm:items-center sm:gap-6"
+                          className="flex min-w-0 flex-1 flex-col gap-1 sm:flex-row sm:items-center sm:gap-6"
                         >
                           <span className="w-28 shrink-0 text-sm font-semibold tabular-nums text-text-secondary">
                             {formatScheduleTime(stream.scheduledAt)}
@@ -237,6 +258,7 @@ export default function HomePage() {
                             </span>
                           </span>
                         </Link>
+                        <ReminderButton />
                       </li>
                     ))}
                   </ul>
@@ -247,13 +269,20 @@ export default function HomePage() {
             <section>
               <SectionHeader title="Mi lista" href="/mi-lista" />
               {feed.continueWatching.length === 0 ? (
-                <EmptyState title="Nada en tu lista todavía" />
+                <EmptyState
+                  title="Todavía no guardaste contenido."
+                  actionLabel="Explorar programas"
+                  onAction={() => {
+                    window.location.href = "/programas";
+                  }}
+                />
               ) : (
-                <div className="flex gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 sm:overflow-visible">
-                  {feed.continueWatching.slice(0, 5).map((episode) => (
+                <ContentRow ariaLabel="Mi lista">
+                  {feed.continueWatching.slice(0, 8).map((episode) => (
                     <div
                       key={episode.id}
-                      className="w-[200px] shrink-0 sm:w-auto"
+                      role="listitem"
+                      className="w-[200px] shrink-0 snap-start sm:w-[220px]"
                     >
                       <EpisodeCard
                         episode={episode}
@@ -261,7 +290,7 @@ export default function HomePage() {
                       />
                     </div>
                   ))}
-                </div>
+                </ContentRow>
               )}
             </section>
           </div>

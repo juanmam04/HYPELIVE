@@ -1,4 +1,12 @@
-import { colors, durations, easings, radii, spacing, typography } from "./tokens";
+import {
+  colors,
+  durations,
+  easings,
+  motion,
+  radii,
+  spacing,
+  typography,
+} from "./tokens";
 
 /**
  * Flatten tokens into CSS custom properties for web.
@@ -35,6 +43,13 @@ export function toCssVariables(
   for (const [key, value] of Object.entries(easings)) {
     vars[`--${prefix}-easing-${key}`] = value;
   }
+
+  vars[`--${prefix}-motion-card-hover-scale`] = String(motion.cardHoverScale);
+  vars[`--${prefix}-motion-card-pressed-scale`] = String(
+    motion.cardPressedScale,
+  );
+  vars[`--${prefix}-motion-tv-focus-scale`] = String(motion.tvFocusScale);
+  vars[`--${prefix}-motion-image-zoom`] = String(motion.imageZoomHover);
 
   return vars;
 }

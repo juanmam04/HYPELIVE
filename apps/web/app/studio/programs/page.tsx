@@ -29,11 +29,16 @@ export default function StudioProgramsPage() {
                 Programas activos de {studio?.channel?.name ?? "tu canal"}.
               </p>
             </div>
-            <Link href="/studio">
-              <Button variant="secondary" size="sm">
-                ← Studio
-              </Button>
-            </Link>
+            <div className="flex flex-wrap gap-2">
+              <Link href="/studio/programs/new">
+                <Button size="sm">Nuevo programa</Button>
+              </Link>
+              <Link href="/studio">
+                <Button variant="secondary" size="sm">
+                  ← Studio
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {query.isLoading ? (

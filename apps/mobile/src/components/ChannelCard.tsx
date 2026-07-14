@@ -50,7 +50,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     minHeight: touchTargets.min * 2,
   },
-  pressed: { opacity: 0.85 },
+  pressed: {
+    opacity: 0.92,
+    transform: [{ scale: 0.985 }],
+  },
   avatar: {
     width: 72,
     height: 72,

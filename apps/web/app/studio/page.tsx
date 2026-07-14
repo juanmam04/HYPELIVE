@@ -45,6 +45,11 @@ export default function StudioPage() {
                   Programas
                 </Button>
               </Link>
+              <Link href="/studio/episodes">
+                <Button variant="secondary" size="sm">
+                  Episodios
+                </Button>
+              </Link>
               <Link href="/studio/recordings">
                 <Button variant="secondary" size="sm">
                   <Disc className="size-4" />

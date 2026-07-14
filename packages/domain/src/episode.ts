@@ -20,6 +20,7 @@ export const EMPTY_STATE = {
   episodeProcessing: "Estamos preparando la repetición.",
   episodeUnavailable: "Este episodio no está disponible.",
   genericError: "Algo salió mal. Intentá nuevamente.",
+  emptyList: "Todavía no guardaste contenido.",
 } as const;
 
 export function upcomingStreamMessage(scheduledFor: string): string {

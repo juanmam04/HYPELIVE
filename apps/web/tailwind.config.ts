@@ -67,9 +67,16 @@ const config: Config = {
         Object.entries(spacing).map(([k, v]) => [k, `${v}px`]),
       ),
       transitionDuration: {
+        instant: `${durations.instant}ms`,
         fast: `${durations.fast}ms`,
         normal: `${durations.normal}ms`,
         slow: `${durations.slow}ms`,
+        page: `${durations.page}ms`,
+      },
+      transitionTimingFunction: {
+        standard: "cubic-bezier(0.2, 0, 0, 1)",
+        enter: "cubic-bezier(0, 0, 0.2, 1)",
+        exit: "cubic-bezier(0.4, 0, 1, 1)",
       },
       screens: {
         sm: `${breakpoints.sm}px`,

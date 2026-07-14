@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "prettier": "^3.4.2",
+    "puppeteer-core": "^25.3.0",
     "rimraf": "^6.0.1",
     "turbo": "^2.3.3",
     "typescript": "^5.7.2"

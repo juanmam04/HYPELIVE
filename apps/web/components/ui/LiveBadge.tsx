@@ -16,7 +16,10 @@ export function LiveBadge({
         className,
       )}
     >
-      <span className="size-1.5 rounded-full bg-white" aria-hidden />
+      <span
+        className="live-dot size-1.5 shrink-0 rounded-full bg-white"
+        aria-hidden
+      />
       EN VIVO
     </span>
   );

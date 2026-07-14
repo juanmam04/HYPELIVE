@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type ToastTone = "default" | "success" | "error" | "info";
+export type ToastTone = "default" | "success" | "error" | "info" | "warning";
 
 export type ToastItem = {
   id: string;
@@ -16,12 +16,17 @@ type ToastState = {
   clear: () => void;
 };
 
+const MAX_VISIBLE = 3;
+
 export const useToastStore = create<ToastState>((set) => ({
   toasts: [],
   push: (toast) => {
     const id = toast.id ?? crypto.randomUUID();
     set((state) => ({
-      toasts: [...state.toasts, { ...toast, id, tone: toast.tone ?? "default" }],
+      toasts: [
+        ...state.toasts,
+        { ...toast, id, tone: toast.tone ?? "default" },
+      ].slice(-MAX_VISIBLE),
     }));
     return id;
   },

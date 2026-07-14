@@ -63,7 +63,10 @@ const styles = StyleSheet.create({
     width: 220,
     marginRight: spacing[3],
   },
-  pressed: { opacity: 0.85 },
+  pressed: {
+    opacity: 0.92,
+    transform: [{ scale: 0.985 }],
+  },
   thumb: {
     height: 124,
     borderRadius: radii.lg,

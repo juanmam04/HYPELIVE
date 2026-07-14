@@ -18,8 +18,6 @@
   --hl-color-accent-hover: #5b93f0;
   --hl-color-accent-muted: rgba(61, 126, 234, 0.16);
   --hl-color-accent-soft: #8bb0f5;
-  --hl-color-amber: #8b95a5;
-  --hl-color-amber-muted: rgba(139, 149, 165, 0.14);
   --hl-color-live: #e11d2e;
   --hl-color-success: #2f9e6e;
   --hl-color-warning: #c9a227;
@@ -28,9 +26,20 @@
   --hl-color-text-primary: #f5f7fa;
   --hl-color-text-secondary: #c5cdd8;
   --hl-color-text-muted: #8b95a5;
-  --hl-duration-fast: 150ms;
-  --hl-duration-normal: 180ms;
-  --hl-easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --hl-duration-instant: 80ms;
+  --hl-duration-fast: 140ms;
+  --hl-duration-normal: 200ms;
+  --hl-duration-slow: 280ms;
+  --hl-duration-page: 320ms;
+
+  --hl-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --hl-easing-enter: cubic-bezier(0, 0, 0.2, 1);
+  --hl-easing-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  --hl-motion-card-hover-scale: 1.015;
+  --hl-motion-card-pressed-scale: 0.985;
+  --hl-motion-image-zoom: 1.025;
 }
 
 html {
@@ -78,22 +87,201 @@ img {
   letter-spacing: -0.02em;
 }
 
-/* Card hover — max scale 1.02, no layout jump */
+/* ——— Cards ——— */
 .card-hover {
+  transform: translateZ(0);
   transition:
-    transform var(--hl-duration-normal) var(--hl-easing-standard),
-    box-shadow var(--hl-duration-normal) var(--hl-easing-standard),
-    border-color var(--hl-duration-normal) var(--hl-easing-standard);
+    transform var(--hl-duration-fast) var(--hl-easing-standard),
+    box-shadow var(--hl-duration-fast) var(--hl-easing-standard),
+    border-color var(--hl-duration-fast) var(--hl-easing-standard);
 }
 
 .card-hover:hover {
-  transform: scale(1.02);
+  transform: scale(var(--hl-motion-card-hover-scale));
   border-color: var(--hl-color-border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.42);
+  z-index: 1;
 }
 
 .card-hover:active {
-  transform: scale(1);
+  transform: scale(var(--hl-motion-card-pressed-scale));
+  transition-duration: var(--hl-duration-instant);
+}
+
+.card-hover .card-media {
+  transition: transform var(--hl-duration-fast) var(--hl-easing-standard);
+}
+
+.card-hover:hover .card-media {
+  transform: scale(var(--hl-motion-image-zoom));
+}
+
+.card-hover .card-overlay {
+  transition: background-color var(--hl-duration-fast) var(--hl-easing-standard);
+}
+
+.card-hover:hover .card-overlay {
+  background-color: rgba(7, 9, 13, 0.55);
+}
+
+.card-hover .card-meta {
+  transition: color var(--hl-duration-fast) var(--hl-easing-standard);
+}
+
+.card-hover:hover .card-meta {
+  color: var(--hl-color-text-secondary);
+}
+
+.card-hover .card-play {
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity var(--hl-duration-fast) var(--hl-easing-enter),
+    transform var(--hl-duration-fast) var(--hl-easing-enter);
+}
+
+.card-hover:hover .card-play,
+.card-hover:focus-visible .card-play {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ——— Buttons ——— */
+.btn-press {
+  transition:
+    background-color var(--hl-duration-fast) var(--hl-easing-standard),
+    border-color var(--hl-duration-fast) var(--hl-easing-standard),
+    color var(--hl-duration-fast) var(--hl-easing-standard),
+    transform var(--hl-duration-instant) var(--hl-easing-standard),
+    box-shadow var(--hl-duration-fast) var(--hl-easing-standard);
+}
+
+.btn-press:active:not(:disabled) {
+  transform: scale(var(--hl-motion-card-pressed-scale));
+}
+
+.btn-press .btn-icon {
+  transition: transform var(--hl-duration-fast) var(--hl-easing-standard);
+}
+
+.btn-press:hover:not(:disabled) .btn-icon {
+  transform: translateX(2px);
+}
+
+/* ——— Live pulse (dot only) ——— */
+.live-dot {
+  animation: pulseLive 1.6s ease-in-out infinite;
+}
+
+/* ——— Page content enter ——— */
+.page-enter {
+  animation: pageEnter var(--hl-duration-normal) var(--hl-easing-enter) both;
+}
+
+.hero-enter {
+  animation: heroEnter var(--hl-duration-slow) var(--hl-easing-enter) both;
+}
+
+.hero-enter-delay {
+  animation: heroEnter var(--hl-duration-slow) var(--hl-easing-enter) 80ms both;
+}
+
+.chat-msg-enter {
+  animation: chatMsgEnter var(--hl-duration-fast) var(--hl-easing-enter) both;
+}
+
+@keyframes chatMsgEnter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ——— Fade image ——— */
+.fade-img {
+  opacity: 0;
+  transition: opacity var(--hl-duration-normal) var(--hl-easing-enter);
+}
+
+.fade-img.is-loaded {
+  opacity: 1;
+}
+
+/* ——— Nav underline ——— */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 0.35rem;
+  height: 2px;
+  border-radius: 1px;
+  background: transparent;
+  transition: background-color var(--hl-duration-fast) var(--hl-easing-standard);
+}
+
+.nav-link[aria-current="page"]::after {
+  background: var(--hl-color-accent);
+}
+
+@keyframes pulseLive {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--hl-color-slate) 0%,
+    var(--hl-color-elevated) 50%,
+    var(--hl-color-slate) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -106,7 +294,35 @@ img {
     scroll-behavior: auto !important;
   }
 
-  .card-hover:hover {
+  .card-hover:hover,
+  .card-hover:active {
     transform: none;
+  }
+
+  .card-hover:hover .card-media {
+    transform: none;
+  }
+
+  .card-hover .card-play {
+    opacity: 1;
+    transform: none;
+  }
+
+  .live-dot,
+  .skeleton-shimmer {
+    animation: none !important;
+  }
+
+  .page-enter,
+  .hero-enter,
+  .hero-enter-delay,
+  .chat-msg-enter {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+
+  .fade-img {
+    opacity: 1;
   }
 }

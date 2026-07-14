@@ -9,21 +9,22 @@ import {
 } from "react";
 import { Send, RotateCcw, ChevronDown } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import {
-  chatQueryOptions,
-  sendChatMessage,
-} from "@hypelive/api";
+import { chatQueryOptions, sendChatMessage } from "@hypelive/api";
 import { logger } from "@hypelive/analytics";
 import { MAX_CHAT_LENGTH, validateChatContent } from "@hypelive/domain";
 import { createClient, hasSupabaseBrowser } from "@/lib/supabase/client";
+import { apiOptions } from "@/lib/api-options";
 import { toChatMessage, type AppChatMessage } from "@/lib/models";
 import { cn } from "@/lib/cn";
 import { IconButton } from "@/components/ui/IconButton";
 import { Avatar } from "@/components/ui/Avatar";
+import { ChatSkeleton } from "@/components/ui/ContentSkeletons";
 import { useAuth } from "@/providers/AuthProvider";
 import { useToast } from "@/components/ui/Toast";
 
 const MOCK_NAMES = ["Nova", "Kai", "Mora", "Sol", "Iris", "Ren"];
+
+type Conn = "connected" | "reconnecting" | "disconnected";
 
 export function LiveChat({
   streamId,
@@ -40,24 +41,34 @@ export function LiveChat({
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [showNew, setShowNew] = useState(false);
+  const [conn, setConn] = useState<Conn>("connected");
+  const [hydrated, setHydrated] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const stickToBottom = useRef(true);
+  const initialIds = useRef<Set<string>>(new Set());
   const configured = hasSupabaseBrowser();
 
   const query = useQuery({
-    ...chatQueryOptions(streamId),
+    ...chatQueryOptions(streamId, apiOptions()),
     enabled,
   });
 
   useEffect(() => {
     if (query.data) {
-      setMessages(query.data.map(toChatMessage));
+      const mapped = query.data.map(toChatMessage);
+      if (!hydrated) {
+        initialIds.current = new Set(mapped.map((m) => m.id));
+        setHydrated(true);
+      }
+      setMessages(mapped);
+    } else if (query.isFetched) {
+      setHydrated(true);
     }
-  }, [query.data]);
+  }, [query.data, query.isFetched, hydrated]);
 
-  // Local mock incoming messages when Supabase is not configured
   useEffect(() => {
     if (configured || !enabled) return;
+    setConn("connected");
     const timer = window.setInterval(() => {
       const name = MOCK_NAMES[Math.floor(Math.random() * MOCK_NAMES.length)]!;
       const incoming: AppChatMessage = {
@@ -69,7 +80,7 @@ export function LiveChat({
           "Esto está brutal",
           "Saludos desde Madrid",
           "Más volumen a la mesa",
-          "HYPE LIVE 🔥",
+          "Excelente programa",
         ][Math.floor(Math.random() * 5)]!,
         createdAt: new Date().toISOString(),
         displayName: name,
@@ -81,12 +92,12 @@ export function LiveChat({
     return () => window.clearInterval(timer);
   }, [configured, enabled, streamId]);
 
-  // Realtime subscription
   useEffect(() => {
     if (!configured || !enabled) return;
     const client = createClient();
     if (!client) return;
 
+    setConn("reconnecting");
     const channel = client
       .channel(`chat:${streamId}`)
       .on(
@@ -101,8 +112,9 @@ export function LiveChat({
           const msg = toChatMessage({
             id: (payload.new as { id: string }).id,
             streamId,
-            profileId: (payload.new as { profile_id?: string; user_id?: string })
-              .profile_id ??
+            profileId:
+              (payload.new as { profile_id?: string; user_id?: string })
+                .profile_id ??
               (payload.new as { user_id?: string }).user_id ??
               "",
             content: (payload.new as { content: string }).content,
@@ -117,6 +129,11 @@ export function LiveChat({
       )
       .subscribe((status) => {
         logger.debug("Chat channel status", status);
+        if (status === "SUBSCRIBED") setConn("connected");
+        else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          setConn("disconnected");
+          logger.warn("Chat disconnected", { streamId, status });
+        } else if (status === "CLOSED") setConn("reconnecting");
       });
 
     return () => {
@@ -127,14 +144,17 @@ export function LiveChat({
   const scrollToBottom = useCallback(() => {
     const el = listRef.current;
     if (!el) return;
-    el.scrollTop = el.scrollHeight;
+    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
     stickToBottom.current = true;
     setShowNew(false);
   }, []);
 
   useEffect(() => {
-    if (stickToBottom.current) scrollToBottom();
-  }, [messages, scrollToBottom]);
+    if (stickToBottom.current) {
+      const el = listRef.current;
+      if (el) el.scrollTop = el.scrollHeight;
+    }
+  }, [messages]);
 
   const onScroll = () => {
     const el = listRef.current;
@@ -187,15 +207,22 @@ export function LiveChat({
     }
 
     try {
-      const saved = await sendChatMessage({
-        streamId,
-        userId: profileId,
-        content: validation.sanitized!,
-      });
+      const saved = await sendChatMessage(
+        {
+          streamId,
+          userId: profileId,
+          content: validation.sanitized!,
+        },
+        apiOptions(),
+      );
       setMessages((prev) =>
         prev.map((m) =>
           m.id === optimistic.id
-            ? { ...toChatMessage(saved), status: "sent", displayName: optimistic.displayName }
+            ? {
+                ...toChatMessage(saved),
+                status: "sent",
+                displayName: optimistic.displayName,
+              }
             : m,
         ),
       );
@@ -209,12 +236,24 @@ export function LiveChat({
         ),
       );
       toast("No se pudo enviar", {
-        description: "Toca reintentar",
+        description: "Tocá reintentar",
         tone: "error",
       });
     } finally {
       setSending(false);
     }
+  }
+
+  const nearLimit = draft.length > MAX_CHAT_LENGTH * 0.85;
+  const connLabel =
+    conn === "connected"
+      ? "Conectado"
+      : conn === "reconnecting"
+        ? "Reconectando…"
+        : "Desconectado";
+
+  if (!hydrated && query.isLoading) {
+    return <ChatSkeleton />;
   }
 
   return (
@@ -226,8 +265,13 @@ export function LiveChat({
     >
       <div className="border-b border-border-subtle px-4 py-3">
         <h2 className="text-sm font-semibold text-text-primary">Chat en vivo</h2>
-        <p className="text-xs text-text-muted">
-          {configured ? "Tiempo real conectado" : "Simulación local (demo)"}
+        <p
+          className={cn(
+            "text-xs",
+            conn === "disconnected" ? "text-warning" : "text-text-muted",
+          )}
+        >
+          {connLabel}
         </p>
       </div>
 
@@ -242,36 +286,50 @@ export function LiveChat({
               Sé el primero en saludar.
             </p>
           ) : (
-            messages.map((msg) => (
-              <div key={msg.id} className="flex gap-2">
-                <Avatar
-                  name={msg.displayName ?? msg.username ?? "?"}
-                  src={msg.avatarUrl}
-                  size="sm"
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-baseline gap-2">
-                    <span className="truncate text-xs font-semibold text-accent-soft">
-                      {msg.displayName ?? msg.username ?? "Usuario"}
-                    </span>
-                    {msg.status === "failed" ? (
-                      <button
-                        type="button"
-                        className="inline-flex items-center gap-1 text-[11px] text-danger"
-                        onClick={() => void handleSend(undefined, msg)}
-                      >
-                        <RotateCcw className="size-3" />
-                        Reintentar
-                      </button>
-                    ) : null}
-                    {msg.status === "sending" ? (
-                      <span className="text-[11px] text-text-muted">Enviando…</span>
-                    ) : null}
+            messages.map((msg) => {
+              const isNew = !initialIds.current.has(msg.id);
+              return (
+                <div
+                  key={msg.id}
+                  className={cn(
+                    "flex gap-2",
+                    isNew && "chat-msg-enter",
+                    msg.status === "sending" && "opacity-60",
+                  )}
+                >
+                  <Avatar
+                    name={msg.displayName ?? msg.username ?? "?"}
+                    src={msg.avatarUrl}
+                    size="sm"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-baseline gap-2">
+                      <span className="truncate text-xs font-semibold text-accent-soft">
+                        {msg.displayName ?? msg.username ?? "Usuario"}
+                      </span>
+                      {msg.status === "failed" ? (
+                        <button
+                          type="button"
+                          className="inline-flex items-center gap-1 text-[11px] text-danger"
+                          onClick={() => void handleSend(undefined, msg)}
+                        >
+                          <RotateCcw className="size-3" />
+                          Reintentar
+                        </button>
+                      ) : null}
+                      {msg.status === "sending" ? (
+                        <span className="text-[11px] text-text-muted">
+                          Enviando…
+                        </span>
+                      ) : null}
+                    </div>
+                    <p className="break-words text-sm text-text-secondary">
+                      {msg.content}
+                    </p>
                   </div>
-                  <p className="break-words text-sm text-text-secondary">{msg.content}</p>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 
@@ -279,7 +337,7 @@ export function LiveChat({
           <button
             type="button"
             onClick={scrollToBottom}
-            className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1 rounded-full border border-border bg-elevated px-3 py-1.5 text-xs text-text-primary shadow-soft"
+            className="btn-press absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1 rounded-full border border-border bg-elevated px-3 py-1.5 text-xs text-text-primary shadow-soft"
           >
             <ChevronDown className="size-3.5" />
             Nuevos mensajes
@@ -299,7 +357,7 @@ export function LiveChat({
           rows={1}
           maxLength={MAX_CHAT_LENGTH}
           value={draft}
-          disabled={!enabled}
+          disabled={!enabled || conn === "disconnected"}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -308,7 +366,7 @@ export function LiveChat({
             }
           }}
           placeholder={enabled ? "Escribe un mensaje…" : "Chat no disponible"}
-          className="max-h-24 min-h-[40px] flex-1 resize-none rounded-md border border-border bg-slate px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none disabled:opacity-50"
+          className="max-h-24 min-h-[40px] flex-1 resize-none rounded-md border border-border bg-slate px-3 py-2 text-sm text-text-primary placeholder:text-text-muted transition-colors duration-fast focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:opacity-50"
         />
         <IconButton
           label="Enviar"
@@ -320,7 +378,12 @@ export function LiveChat({
           <Send className="size-4" />
         </IconButton>
       </form>
-      <div className="px-3 pb-2 text-right text-[10px] text-text-muted">
+      <div
+        className={cn(
+          "px-3 pb-2 text-right text-[10px]",
+          nearLimit ? "text-warning" : "text-text-muted",
+        )}
+      >
         {draft.length}/{MAX_CHAT_LENGTH}
       </div>
     </div>

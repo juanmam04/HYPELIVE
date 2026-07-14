@@ -13,6 +13,7 @@ export {
   breakpoints,
   durations,
   easings,
+  motion,
   touchTargets,
   focusScale,
 } from "./tokens";

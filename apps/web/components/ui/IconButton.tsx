@@ -12,13 +12,14 @@ export type IconButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const sizes = {
-  sm: "size-8",
-  md: "size-10",
-  lg: "size-12",
+  sm: "size-10 min-w-10 min-h-10",
+  md: "size-10 min-w-10 min-h-10",
+  lg: "size-11 min-w-11 min-h-11",
 };
 
 const variants = {
-  ghost: "bg-transparent hover:bg-elevated text-text-secondary hover:text-text-primary",
+  ghost:
+    "bg-transparent hover:bg-elevated text-text-secondary hover:text-text-primary",
   solid: "bg-elevated hover:bg-slate text-text-primary border border-border",
   accent: "bg-accent/15 text-accent-soft hover:bg-accent/25",
 };
@@ -44,15 +45,16 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       title={label}
       disabled={disabled || loading}
       className={cn(
-        "inline-flex items-center justify-center rounded-md transition-all duration-fast",
-        "active:scale-[0.96] disabled:opacity-50 disabled:pointer-events-none",
+        "btn-press inline-flex items-center justify-center rounded-md",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+        "disabled:opacity-50 disabled:pointer-events-none",
         sizes[size],
         variants[variant],
         className,
       )}
       {...props}
     >
-      {loading ? <Loader2 className="size-4 animate-spin" /> : children}
+      {loading ? <Loader2 className="size-4 animate-spin" aria-hidden /> : children}
     </button>
   ),
 );

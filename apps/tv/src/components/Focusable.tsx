@@ -7,7 +7,15 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { colors, focusScale, radii, touchTargets } from "@hypelive/design-tokens";
+import {
+  colors,
+  durations,
+  focusScale,
+  motion,
+  radii,
+  shadows,
+  touchTargets,
+} from "@hypelive/design-tokens";
 
 type Props = PressableProps & {
   children: ReactNode;
@@ -18,14 +26,13 @@ type Props = PressableProps & {
 
 /**
  * TV-first focusable wrapper.
- * Uses Pressable focus events; on tvOS with react-native-tvos,
- * hasTVPreferredFocus / TVFocusGuideView can wrap rows.
+ * Scale max 1.04, blue border, subtle shadow. No hover.
  */
 export function Focusable({
   children,
   style,
   focusedStyle,
-  scale = focusScale.default,
+  scale = motion.tvFocusScale ?? focusScale.default,
   ...rest
 }: Props) {
   const [focused, setFocused] = useState(false);
@@ -41,6 +48,8 @@ export function Focusable({
           transform: [{ scale }],
           borderColor: colors.accent,
           borderWidth: 3,
+          zIndex: 2,
+          ...shadows.rn.md,
         },
         focused && focusedStyle,
       ]}
@@ -58,6 +67,7 @@ const styles = StyleSheet.create({
     borderRadius: radii.lg,
     borderWidth: 3,
     borderColor: "transparent",
+    // RN doesn't support CSS transitions; keep scale change discrete & short via platform.
   },
   ring: {
     ...StyleSheet.absoluteFillObject,
@@ -66,3 +76,6 @@ const styles = StyleSheet.create({
     borderColor: colors.accentSoft,
   },
 });
+
+// Keep duration token referenced for documentation / future Animated timing.
+void durations.fast;

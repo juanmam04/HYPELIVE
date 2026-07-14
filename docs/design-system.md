@@ -1,12 +1,12 @@
-# Sistema de diseño — Project One / HYPE LIVE
+# Sistema de diseño — HYPE LIVE
 
 ## Dirección
 
-Plataforma de streaming comercial (línea Netflix / Disney+ / Prime, sin clonar).
+Plataforma de streaming comercial (claridad de grandes plataformas, sin clonar).
 Fondo negro / azul muy oscuro, acento azul sobrio, rojo solo para EN VIVO y errores.
 Sans-serif limpia. Sin coral, neón, glassmorphism ni tipografía editorial.
 
-Identidad provisional: **Project One** (`BRAND_NAME`).
+Identidad provisional: **HYPE LIVE** (`APP_NAME` / `BRAND_NAME` en `@hypelive/domain`).
 
 ## Tokens (`@hypelive/design-tokens`)
 

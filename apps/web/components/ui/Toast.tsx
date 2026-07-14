@@ -1,17 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
-import { useToastStore } from "@/stores/toast";
+import { useToastStore, type ToastTone } from "@/stores/toast";
 import { IconButton } from "./IconButton";
 
-const toneClass = {
+const toneClass: Record<ToastTone, string> = {
   default: "border-border",
   success: "border-success/40",
   error: "border-danger/40",
   info: "border-info/40",
+  warning: "border-warning/40",
 };
 
 export function ToastViewport() {
@@ -52,24 +53,38 @@ function ToastItem({
   id: string;
   title: string;
   description?: string;
-  tone: keyof typeof toneClass;
+  tone: ToastTone;
   onDismiss: (id: string) => void;
   reduceMotion: boolean;
 }) {
+  const [paused, setPaused] = useState(false);
+  const remaining = useRef(4200);
+  const started = useRef(Date.now());
+
   useEffect(() => {
-    const timer = window.setTimeout(() => onDismiss(id), 4200);
+    if (paused) {
+      remaining.current -= Date.now() - started.current;
+      return;
+    }
+    started.current = Date.now();
+    const timer = window.setTimeout(
+      () => onDismiss(id),
+      Math.max(800, remaining.current),
+    );
     return () => window.clearTimeout(timer);
-  }, [id, onDismiss]);
+  }, [id, onDismiss, paused]);
 
   return (
     <motion.div
       layout
-      initial={reduceMotion ? false : { opacity: 0, y: 16, x: 8 }}
-      animate={{ opacity: 1, y: 0, x: 0 }}
-      exit={reduceMotion ? undefined : { opacity: 0, y: 8 }}
-      transition={{ duration: reduceMotion ? 0 : 0.16 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={reduceMotion ? undefined : { opacity: 0, y: 6 }}
+      transition={{ duration: reduceMotion ? 0 : 0.18 }}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
       className={cn(
-        "pointer-events-auto rounded-lg border bg-elevated/95 p-3 shadow-soft backdrop-blur",
+        "pointer-events-auto rounded-lg border bg-elevated p-3 shadow-soft",
         toneClass[tone],
       )}
     >
@@ -80,7 +95,11 @@ function ToastItem({
             <p className="mt-0.5 text-sm text-text-muted">{description}</p>
           ) : null}
         </div>
-        <IconButton label="Cerrar aviso" size="sm" onClick={() => onDismiss(id)}>
+        <IconButton
+          label="Cerrar aviso"
+          size="sm"
+          onClick={() => onDismiss(id)}
+        >
           <X className="size-3.5" />
         </IconButton>
       </div>
@@ -103,7 +122,10 @@ export function useToast() {
   return {
     toast: (
       title: string,
-      options?: { description?: string; tone?: "default" | "success" | "error" | "info" },
+      options?: {
+        description?: string;
+        tone?: ToastTone;
+      },
     ) =>
       push({
         title,

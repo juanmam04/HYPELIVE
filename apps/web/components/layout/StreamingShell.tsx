@@ -6,6 +6,9 @@ import { useState } from "react";
 import { Menu, Search, X, LogOut, Settings } from "lucide-react";
 import { BRAND_NAME } from "@hypelive/domain";
 import { Button } from "@/components/ui/Button";
+import { OfflineBanner } from "@/components/ui/OfflineBanner";
+import { NavigationProgress } from "@/components/layout/NavigationProgress";
+import { PageTransition } from "@/components/layout/PageTransition";
 import { cn } from "@/lib/cn";
 import { useAuth } from "@/providers/AuthProvider";
 
@@ -35,11 +38,13 @@ export function StreamingShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col bg-ink">
+      <NavigationProgress />
+      <OfflineBanner />
       <header className="sticky top-0 z-[200] border-b border-white/5 bg-ink/95">
         <div className="mx-auto flex h-14 max-w-[1920px] items-center gap-4 px-4 sm:h-16 sm:px-8 lg:px-12">
           <button
             type="button"
-            className="rounded p-2 text-text-secondary hover:text-text-primary lg:hidden"
+            className="btn-press rounded p-2 text-text-secondary hover:text-text-primary lg:hidden"
             onClick={() => setMenuOpen(true)}
             aria-label="Abrir menú"
           >
@@ -47,7 +52,7 @@ export function StreamingShell({ children }: { children: React.ReactNode }) {
           </button>
 
           <Link
-            href="/home"
+            href="/"
             className="shrink-0 text-lg font-bold tracking-tight text-text-primary sm:text-xl"
           >
             {BRAND_NAME}
@@ -66,7 +71,7 @@ export function StreamingShell({ children }: { children: React.ReactNode }) {
                   key={href}
                   href={href}
                   className={cn(
-                    "rounded px-3 py-2 text-sm font-medium transition-colors duration-normal",
+                    "nav-link rounded px-3 py-2 text-sm font-medium transition-colors duration-fast",
                     active
                       ? "text-text-primary"
                       : "text-text-muted hover:text-text-primary",
@@ -88,11 +93,11 @@ export function StreamingShell({ children }: { children: React.ReactNode }) {
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Buscar"
                   aria-label="Buscar"
-                  className="h-9 w-36 rounded border border-border bg-slate px-3 text-sm text-text-primary outline-none focus:border-accent sm:w-52"
+                  className="h-9 w-36 rounded border border-border bg-slate px-3 text-sm text-text-primary outline-none transition-colors duration-fast focus:border-accent focus:ring-2 focus:ring-accent/30 sm:w-52"
                 />
                 <button
                   type="button"
-                  className="p-2 text-text-muted hover:text-text-primary"
+                  className="btn-press p-2 text-text-muted hover:text-text-primary"
                   onClick={() => setSearchOpen(false)}
                   aria-label="Cerrar búsqueda"
                 >
@@ -102,7 +107,7 @@ export function StreamingShell({ children }: { children: React.ReactNode }) {
             ) : (
               <button
                 type="button"
-                className="rounded p-2 text-text-secondary hover:text-text-primary"
+                className="btn-press rounded p-2 text-text-secondary hover:text-text-primary"
                 onClick={() => setSearchOpen(true)}
                 aria-label="Buscar"
               >
@@ -114,11 +119,15 @@ export function StreamingShell({ children }: { children: React.ReactNode }) {
               <>
                 <Link
                   href="/studio"
-                  className="hidden rounded border border-border px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary sm:inline"
+                  className="hidden rounded border border-border px-3 py-1.5 text-sm font-medium text-text-secondary transition-colors duration-fast hover:border-ash/40 hover:text-text-primary sm:inline"
                 >
                   Studio
                 </Link>
-                <Button variant="ghost" size="sm" onClick={() => void signOutUser()}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => void signOutUser()}
+                >
                   <LogOut className="size-4" />
                   <span className="ml-1.5 hidden sm:inline">Salir</span>
                 </Button>
@@ -127,13 +136,13 @@ export function StreamingShell({ children }: { children: React.ReactNode }) {
               <>
                 <Link
                   href="/login"
-                  className="px-2 text-sm font-medium text-text-secondary hover:text-text-primary sm:px-3"
+                  className="px-2 text-sm font-medium text-text-secondary transition-colors duration-fast hover:text-text-primary sm:px-3"
                 >
                   Entrar
                 </Link>
                 <Link
                   href="/register"
-                  className="inline-flex h-9 items-center rounded bg-accent px-3 text-sm font-semibold text-text-on-accent hover:bg-accent-hover"
+                  className="btn-press inline-flex h-9 items-center rounded bg-accent px-3 text-sm font-semibold text-text-on-accent hover:bg-accent-hover"
                 >
                   Crear cuenta
                 </Link>
@@ -147,16 +156,16 @@ export function StreamingShell({ children }: { children: React.ReactNode }) {
         <div className="fixed inset-0 z-[300] lg:hidden">
           <button
             type="button"
-            className="absolute inset-0 bg-ink/80"
+            className="absolute inset-0 bg-ink/80 transition-opacity duration-normal"
             aria-label="Cerrar menú"
             onClick={() => setMenuOpen(false)}
           />
-          <aside className="absolute inset-y-0 left-0 flex w-72 flex-col bg-charcoal p-4 shadow-deep">
+          <aside className="absolute inset-y-0 left-0 flex w-72 translate-x-0 flex-col bg-charcoal p-4 shadow-deep transition-transform duration-normal ease-enter">
             <div className="mb-4 flex items-center justify-between">
               <span className="font-bold">{BRAND_NAME}</span>
               <button
                 type="button"
-                className="p-2 text-text-muted"
+                className="btn-press p-2 text-text-muted"
                 onClick={() => setMenuOpen(false)}
                 aria-label="Cerrar"
               >
@@ -169,7 +178,7 @@ export function StreamingShell({ children }: { children: React.ReactNode }) {
                   key={href}
                   href={href}
                   onClick={() => setMenuOpen(false)}
-                  className="rounded px-3 py-3 text-sm font-medium text-text-secondary hover:bg-elevated hover:text-text-primary"
+                  className="btn-press rounded px-3 py-3 text-sm font-medium text-text-secondary hover:bg-elevated hover:text-text-primary"
                 >
                   {label}
                 </Link>
@@ -178,7 +187,7 @@ export function StreamingShell({ children }: { children: React.ReactNode }) {
                 <Link
                   href="/studio"
                   onClick={() => setMenuOpen(false)}
-                  className="rounded px-3 py-3 text-sm font-medium text-text-secondary hover:bg-elevated hover:text-text-primary"
+                  className="btn-press rounded px-3 py-3 text-sm font-medium text-text-secondary hover:bg-elevated hover:text-text-primary"
                 >
                   Studio
                 </Link>
@@ -186,7 +195,7 @@ export function StreamingShell({ children }: { children: React.ReactNode }) {
               <Link
                 href="/configuracion"
                 onClick={() => setMenuOpen(false)}
-                className="mt-2 flex items-center gap-2 rounded px-3 py-3 text-sm font-medium text-text-secondary hover:bg-elevated hover:text-text-primary"
+                className="btn-press mt-2 flex items-center gap-2 rounded px-3 py-3 text-sm font-medium text-text-secondary hover:bg-elevated hover:text-text-primary"
               >
                 <Settings className="size-4" />
                 Configuración
@@ -196,7 +205,9 @@ export function StreamingShell({ children }: { children: React.ReactNode }) {
         </div>
       ) : null}
 
-      <main className="flex-1">{children}</main>
+      <main className="flex-1">
+        <PageTransition>{children}</PageTransition>
+      </main>
 
       <footer className="border-t border-border-subtle bg-ink">
         <div className="mx-auto flex max-w-[1920px] flex-wrap items-center justify-between gap-3 px-4 py-6 text-sm text-text-muted sm:px-8 lg:px-12">
@@ -211,10 +222,7 @@ export function StreamingShell({ children }: { children: React.ReactNode }) {
             <Link href="/canales" className="hover:text-text-primary">
               Canales
             </Link>
-            <Link
-              href="/configuracion"
-              className="hover:text-text-primary"
-            >
+            <Link href="/configuracion" className="hover:text-text-primary">
               Configuración
             </Link>
           </nav>

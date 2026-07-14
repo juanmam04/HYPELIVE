@@ -3,6 +3,7 @@ import { formatViewerCount } from "@hypelive/domain";
 import { Avatar } from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/Badge";
 import { LiveBadge } from "@/components/ui/LiveBadge";
+import { FadeImage } from "@/components/ui/FadeImage";
 import { cn } from "@/lib/cn";
 import { type AppChannel } from "@/lib/models";
 
@@ -31,21 +32,36 @@ export function ChannelCard({
     <Link
       href={`/channel/${channel.slug}`}
       className={cn(
-        "card-hover flex items-center gap-3 rounded border border-border-subtle bg-slate p-3",
-        "focus-visible:ring-2 focus-visible:ring-accent",
+        "card-hover group flex overflow-hidden rounded border border-border-subtle bg-slate",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
         className,
       )}
     >
-      <Avatar name={channel.name} src={channel.avatarUrl} size="md" />
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-2">
-          <h3 className="truncate text-sm font-semibold text-text-primary">
-            {channel.name}
-          </h3>
-          {channel.isVerified ? <Badge tone="accent">Verificado</Badge> : null}
-          {channel.isLive ? <LiveBadge compact /> : null}
+      <div className="relative hidden w-20 shrink-0 sm:block">
+        <FadeImage
+          src={channel.bannerUrl ?? channel.avatarUrl}
+          alt=""
+          seed={channel.id + channel.name}
+          className="absolute inset-0"
+        />
+        <div className="card-overlay absolute inset-0 bg-ink/30" />
+      </div>
+      <div className="flex min-w-0 flex-1 items-center gap-3 p-3">
+        <div className="transition-transform duration-fast group-hover:scale-[1.04]">
+          <Avatar name={channel.name} src={channel.avatarUrl} size="md" />
         </div>
-        <p className="truncate text-xs text-text-muted">{meta}</p>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="truncate text-sm font-semibold text-text-primary">
+              {channel.name}
+            </h3>
+            {channel.isVerified ? (
+              <Badge tone="accent">Verificado</Badge>
+            ) : null}
+            {channel.isLive ? <LiveBadge compact /> : null}
+          </div>
+          <p className="card-meta truncate text-xs text-text-muted">{meta}</p>
+        </div>
       </div>
     </Link>
   );

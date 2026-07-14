@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { LiveBadge } from "@/components/ui/LiveBadge";
-import { FadeImage } from "@/components/ui/FadeImage";
+import { Thumbnail } from "@/components/ui/Thumbnail";
 import { cn } from "@/lib/cn";
 import { programHref, type AppProgram } from "@/lib/models";
 
@@ -24,14 +24,13 @@ export function ProgramCard({
         className,
       )}
     >
-      <div className="relative aspect-video overflow-hidden">
-        <FadeImage
+      <div className="relative aspect-video overflow-hidden bg-charcoal">
+        <Thumbnail
           src={program.coverUrl}
-          alt=""
           seed={program.id + program.title}
-          className="absolute inset-0"
+          alt={program.title}
         />
-        <div className="card-overlay absolute inset-0 bg-gradient-to-t from-ink via-ink/35 to-transparent" />
+        <div className="card-overlay pointer-events-none absolute inset-0 bg-gradient-to-t from-ink via-ink/35 to-transparent" />
         {program.isLive ? (
           <div className="absolute left-2 top-2 z-[1]">
             <LiveBadge compact />

@@ -21,47 +21,69 @@ const inTwoDays = "2026-07-16T23:00:00.000Z";
 const endedRecent = "2026-07-12T21:00:00.000Z";
 const endedOlder = "2026-07-06T17:00:00.000Z";
 
-/** Studio / music / lifestyle placeholders (prototype-safe, unique per slot). */
-const u = (id: string, w = 1280) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&h=${Math.round((w * 9) / 16)}&q=80`;
+/**
+ * Local Phase-0 media (served from apps/web/public/media).
+ * No external CDN dependency for presentation.
+ */
+const m = (file: string) => `/media/${file}`;
 
 const IMG = {
-  studioNight: u("photo-1598488035139-bdbb2231ce04"),
-  studioWarm: u("photo-1516280440614-6697288d5d38"),
-  micClose: u("photo-1478737270239-2f02b77fc618"),
-  concert: u("photo-1470229722913-7c0e2dbbafd3"),
-  vinyl: u("photo-1571330735066-03aaa9429d89"),
-  cinema: u("photo-1485846234645-a62644f84728"),
-  podcast: u("photo-1590602847861-f357a9332bbc"),
-  cityNight: u("photo-1514525253161-7a46d19cd819"),
-  kitchen: u("photo-1556910103-1c02745aae4d"),
-  road: u("photo-1469854523086-cc02fe5d8800"),
-  tech: u("photo-1518770660439-4636190af475"),
-  books: u("photo-1524995997946-a1c2e315a42f"),
-  stageLights: u("photo-1501386761578-eac5c94b800a"),
-  headphones: u("photo-1484704849700-f032a568e944"),
-  radioDesk: u("photo-1478737270239-2f02b77fc618"),
-  crowd: u("photo-1459749411177-039925447475"),
-  coffeeTalk: u("photo-1543269865-cbf427effbad"),
-  gallery: u("photo-1460661419201-fd4cecdf8a8b"),
-  mountains: u("photo-1506905925346-21bda4d32df4"),
-  deskWork: u("photo-1497366216548-37526070297c"),
-  cooking: u("photo-1556911220-bff31c812dba"),
-  neonCity: u("photo-1514565131-fce0801e5785"),
-  acoustic: u("photo-1510915361894-db8b50135d2a"),
-  interview: u("photo-1560439513-74b037a25d84"),
-  logoNocturna: u("photo-1611162616475-46b635cb495b", 200),
-  logoCasa: u("photo-1511379938547-c1f69419868d", 200),
-  logoPrisma: u("photo-1481627834876-b7833e8f5570", 200),
-  logoHorizonte: u("photo-1469854523086-cc02fe5d8800", 200),
+  studioNight: m("live-1.jpg"),
+  studioWarm: m("prog-1.jpg"),
+  micClose: m("ch-nocturna.jpg"),
+  concert: m("prog-2.jpg"),
+  vinyl: m("ep-2.jpg"),
+  cinema: m("ep-4.jpg"),
+  podcast: m("prog-3.jpg"),
+  cityNight: m("ep-1.jpg"),
+  kitchen: m("ep-3.jpg"),
+  road: m("prog-4.jpg"),
+  tech: m("live-4.jpg"),
+  books: m("prog-3.jpg"),
+  stageLights: m("live-2.jpg"),
+  headphones: m("ep-2.jpg"),
+  radioDesk: m("ch-nocturna.jpg"),
+  crowd: m("live-2.jpg"),
+  coffeeTalk: m("ep-5.jpg"),
+  gallery: m("live-3.jpg"),
+  mountains: m("ep-6.jpg"),
+  deskWork: m("ep-5.jpg"),
+  cooking: m("ep-3.jpg"),
+  neonCity: m("live-4.jpg"),
+  acoustic: m("prog-2.jpg"),
+  interview: m("live-1.jpg"),
+  hero: m("hero.jpg"),
+  logoNocturna: m("ch-nocturna.jpg"),
+  logoCasa: m("ch-casa.jpg"),
+  logoPrisma: m("ch-prisma.jpg"),
+  logoHorizonte: m("ch-horizonte.jpg"),
+  bannerNocturna: m("banner-nocturna.jpg"),
+  bannerCasa: m("banner-casa.jpg"),
+  bannerPrisma: m("banner-prisma.jpg"),
+  bannerHorizonte: m("banner-horizonte.jpg"),
 } as const;
 
-/** Deterministic colorful fallback if a slot needs a unique still. */
-const still = (seed: string) =>
-  `https://picsum.photos/seed/hype-${encodeURIComponent(seed)}/1280/720`;
+const still = (seed: string) => {
+  const files = [
+    "ep-1.jpg",
+    "ep-2.jpg",
+    "ep-3.jpg",
+    "ep-4.jpg",
+    "ep-5.jpg",
+    "ep-6.jpg",
+    "live-1.jpg",
+    "live-2.jpg",
+    "live-3.jpg",
+    "prog-2.jpg",
+    "prog-3.jpg",
+    "prog-4.jpg",
+  ] as const;
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) hash = (hash + seed.charCodeAt(i) * (i + 1)) % 997;
+  return m(files[hash % files.length]!);
+};
 
-const avatar = (seed: string) =>
-  `https://i.pravatar.cc/200?u=${encodeURIComponent(seed)}`;
+const avatar = (seed: string) => still(`avatar-${seed}`);
 
 export const mockChannels: Channel[] = [
   {
@@ -71,7 +93,7 @@ export const mockChannels: Channel[] = [
     description:
       "Entretenimiento, entrevistas y conversación nocturna. El estudio prende cuando la ciudad baja el volumen.",
     logoUrl: IMG.logoNocturna,
-    bannerUrl: IMG.studioNight,
+    bannerUrl: IMG.bannerNocturna,
     isVerified: true,
     createdAt: now,
     updatedAt: now,
@@ -87,7 +109,7 @@ export const mockChannels: Channel[] = [
     description:
       "Música en vivo, artistas y conversaciones. Un living con micrófonos abiertos y sets íntimos.",
     logoUrl: IMG.logoCasa,
-    bannerUrl: IMG.concert,
+    bannerUrl: IMG.bannerCasa,
     isVerified: true,
     createdAt: now,
     updatedAt: now,
@@ -103,7 +125,7 @@ export const mockChannels: Channel[] = [
     description:
       "Cultura, sociedad e ideas. Debates amables, libros, cine y miradas que abren el mapa.",
     logoUrl: IMG.logoPrisma,
-    bannerUrl: IMG.cinema,
+    bannerUrl: IMG.bannerPrisma,
     isVerified: true,
     createdAt: now,
     updatedAt: now,
@@ -119,7 +141,7 @@ export const mockChannels: Channel[] = [
     description:
       "Viajes, innovación y estilo de vida. Rutas, cocina real y proyectos que se animan a salir.",
     logoUrl: IMG.logoHorizonte,
-    bannerUrl: IMG.road,
+    bannerUrl: IMG.bannerHorizonte,
     isVerified: true,
     createdAt: now,
     updatedAt: now,

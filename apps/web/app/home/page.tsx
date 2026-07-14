@@ -52,8 +52,7 @@ function SectionHeader({
   );
 }
 
-const HERO_IMAGE =
-  "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1920&q=80";
+const HERO_IMAGE = "/media/hero.jpg";
 
 export default function HomePage() {
   const query = useQuery(homeFeedQueryOptions(apiOptions()));

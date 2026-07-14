@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Play } from "lucide-react";
 import { formatDuration } from "@hypelive/domain";
-import { FadeImage } from "@/components/ui/FadeImage";
+import { Thumbnail } from "@/components/ui/Thumbnail";
 import { cn } from "@/lib/cn";
 import {
   formatEpisodeLabel,
@@ -34,14 +34,13 @@ export function EpisodeCard({
         className,
       )}
     >
-      <div className="relative aspect-video overflow-hidden">
-        <FadeImage
+      <div className="relative aspect-video overflow-hidden bg-charcoal">
+        <Thumbnail
           src={episode.thumbnailUrl}
-          alt=""
           seed={episode.id + episode.title}
-          className="absolute inset-0"
+          alt={episode.title}
         />
-        <div className="card-overlay absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/10 to-transparent" />
+        <div className="card-overlay pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/75 via-transparent to-transparent" />
         <div
           className="card-play absolute inset-0 flex items-center justify-center"
           aria-hidden

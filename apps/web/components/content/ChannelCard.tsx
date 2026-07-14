@@ -3,7 +3,7 @@ import { formatViewerCount } from "@hypelive/domain";
 import { Avatar } from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/Badge";
 import { LiveBadge } from "@/components/ui/LiveBadge";
-import { FadeImage } from "@/components/ui/FadeImage";
+import { Thumbnail } from "@/components/ui/Thumbnail";
 import { cn } from "@/lib/cn";
 import { type AppChannel } from "@/lib/models";
 
@@ -37,14 +37,13 @@ export function ChannelCard({
         className,
       )}
     >
-      <div className="relative hidden w-20 shrink-0 sm:block">
-        <FadeImage
+      <div className="relative hidden w-24 shrink-0 sm:block">
+        <Thumbnail
           src={channel.bannerUrl ?? channel.avatarUrl}
-          alt=""
           seed={channel.id + channel.name}
-          className="absolute inset-0"
+          alt=""
         />
-        <div className="card-overlay absolute inset-0 bg-ink/30" />
+        <div className="card-overlay pointer-events-none absolute inset-0 bg-ink/25" />
       </div>
       <div className="flex min-w-0 flex-1 items-center gap-3 p-3">
         <div className="transition-transform duration-fast group-hover:scale-[1.04]">

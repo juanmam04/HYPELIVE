@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Play } from "lucide-react";
 import { formatDuration, formatViewerCount } from "@hypelive/domain";
 import { LiveBadge } from "@/components/ui/LiveBadge";
-import { FadeImage } from "@/components/ui/FadeImage";
+import { Thumbnail } from "@/components/ui/Thumbnail";
 import { cn } from "@/lib/cn";
 import {
   formatScheduleTime,
@@ -62,15 +62,13 @@ export function ContentCard({
         className,
       )}
     >
-      <div className="relative aspect-video overflow-hidden">
-        <FadeImage
+      <div className="relative aspect-video overflow-hidden bg-charcoal">
+        <Thumbnail
           src={item.thumbnailUrl}
-          alt=""
           seed={item.id + item.title}
-          className="absolute inset-0"
-          priority
+          alt={item.title}
         />
-        <div className="card-overlay absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/10 to-transparent" />
+        <div className="card-overlay pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/75 via-transparent to-transparent" />
         <div
           className="card-play absolute inset-0 flex items-center justify-center"
           aria-hidden

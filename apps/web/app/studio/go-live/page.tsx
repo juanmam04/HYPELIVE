@@ -28,7 +28,7 @@ export default function GoLivePage() {
   const studio = query.data ? normalizeStudioSummary(query.data) : null;
   const { toast } = useToast();
 
-  const [title, setTitle] = useState("Señal en vivo — HYPE LIVE");
+  const [title, setTitle] = useState("Señal en vivo — HYPE");
   const [broadcastType, setBroadcastType] = useState<BroadcastType>("program");
   const [programId, setProgramId] = useState("");
   const [camera, setCamera] = useState(CAMERAS[0]!);

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     template: `%s · ${BRAND_NAME}`,
   },
   description:
-    "HYPE LIVE — plataforma de streaming en vivo. Canales, programas y transmisiones.",
+    "HYPE — plataforma de streaming en vivo. Canales, programas y transmisiones.",
 };
 
 export default function RootLayout({

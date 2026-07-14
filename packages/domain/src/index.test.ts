@@ -70,10 +70,10 @@ describe("formatters", () => {
 });
 
 describe("branding", () => {
-  it("exposes HYPE LIVE constants", () => {
-    expect(APP_NAME).toBe("HYPE LIVE");
-    expect(BRAND_NAME).toBe("HYPE LIVE");
-    expect(BRAND_SLUG).toBe("hype-live");
+  it("exposes HYPE brand constants", () => {
+    expect(APP_NAME).toBe("HYPE");
+    expect(BRAND_NAME).toBe("HYPE");
+    expect(BRAND_SLUG).toBe("hype");
   });
 });
 

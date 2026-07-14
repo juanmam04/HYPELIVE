@@ -2,8 +2,8 @@ import type { ExpoConfig, ConfigContext } from "expo/config";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: "HYPE LIVE",
-  slug: "hype-live",
+  name: "HYPE",
+  slug: "hype",
   version: "0.0.1",
   orientation: "portrait",
   scheme: "hypelive",
@@ -28,7 +28,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     typedRoutes: true,
   },
   extra: {
-    brandName: "HYPE LIVE",
-    brandSlug: "hype-live",
+    brandName: "HYPE",
+    brandSlug: "hype",
   },
 });

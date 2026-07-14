@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --hl-color-ink: #07090d;
+  --hl-color-charcoal: #0c1017;
+  --hl-color-slate: #141a24;
+  --hl-color-elevated: #1a2230;
+  --hl-color-overlay: rgba(7, 9, 13, 0.78);
+  --hl-color-white: #f5f7fa;
+  --hl-color-mist: #c5cdd8;
+  --hl-color-ash: #8b95a5;
+  --hl-color-stone: #5c6573;
+  --hl-color-border: #2a3344;
+  --hl-color-border-subtle: #1c2433;
+  --hl-color-accent: #3d7eea;
+  --hl-color-accent-hover: #5b93f0;
+  --hl-color-accent-muted: rgba(61, 126, 234, 0.16);
+  --hl-color-accent-soft: #8bb0f5;
+  --hl-color-amber: #8b95a5;
+  --hl-color-amber-muted: rgba(139, 149, 165, 0.14);
+  --hl-color-live: #e11d2e;
+  --hl-color-success: #2f9e6e;
+  --hl-color-warning: #c9a227;
+  --hl-color-danger: #e11d2e;
+  --hl-color-info: #3d7eea;
+  --hl-color-text-primary: #f5f7fa;
+  --hl-color-text-secondary: #c5cdd8;
+  --hl-color-text-muted: #8b95a5;
+  --hl-duration-fast: 150ms;
+  --hl-duration-normal: 180ms;
+  --hl-easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html {
+  color-scheme: dark;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--hl-color-ink);
+  color: var(--hl-color-text-primary);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: rgba(61, 126, 234, 0.35);
+  color: var(--hl-color-white);
+}
+
+:focus-visible {
+  outline: 2px solid var(--hl-color-accent);
+  outline-offset: 2px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.font-display {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Card hover — max scale 1.02, no layout jump */
+.card-hover {
+  transition:
+    transform var(--hl-duration-normal) var(--hl-easing-standard),
+    box-shadow var(--hl-duration-normal) var(--hl-easing-standard),
+    border-color var(--hl-duration-normal) var(--hl-easing-standard);
+}
+
+.card-hover:hover {
+  transform: scale(1.02);
+  border-color: var(--hl-color-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+}
+
+.card-hover:active {
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .card-hover:hover {
+    transform: none;
+  }
+}

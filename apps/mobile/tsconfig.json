@@ -1,0 +1,14 @@
+{
+  "extends": "@hypelive/typescript-config/react-native.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "types": ["react-native"],
+    "jsx": "react-jsx",
+    "moduleSuffixes": [".native", ".ios", ".android", ""]
+  },
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
+  "exclude": ["node_modules"]
+}

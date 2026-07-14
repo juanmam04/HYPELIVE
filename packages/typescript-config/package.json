@@ -1,0 +1,17 @@
+{
+  "name": "@hypelive/typescript-config",
+  "version": "0.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "files": [
+    "base.json",
+    "nextjs.json",
+    "react-native.json",
+    "library.json"
+  ],
+  "scripts": {
+    "typecheck": "echo \"no typecheck\"",
+    "lint": "echo \"no lint\"",
+    "test": "echo \"no tests\""
+  }
+}

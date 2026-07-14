@@ -1,0 +1,10 @@
+{
+  "extends": "@hypelive/typescript-config/library.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "types": ["node"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

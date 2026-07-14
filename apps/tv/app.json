@@ -1,0 +1,25 @@
+{
+  "name": "HYPE LIVE",
+  "slug": "hype-live-tv",
+  "version": "0.0.1",
+  "orientation": "landscape",
+  "scheme": "hypelive-tv",
+  "userInterfaceStyle": "dark",
+  "splash": {
+    "backgroundColor": "#0A0B0D"
+  },
+  "ios": {
+    "supportsTablet": true,
+    "bundleIdentifier": "com.hypelive.tv"
+  },
+  "android": {
+    "adaptiveIcon": {
+      "backgroundColor": "#0A0B0D"
+    },
+    "package": "com.hypelive.tv"
+  },
+  "plugins": ["expo-router"],
+  "experiments": {
+    "typedRoutes": true
+  }
+}

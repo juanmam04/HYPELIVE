@@ -41,7 +41,7 @@ export function EpisodeCard({
           seed={episode.id + episode.title}
           className="absolute inset-0"
         />
-        <div className="card-overlay absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-transparent" />
+        <div className="card-overlay absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/10 to-transparent" />
         <div
           className="card-play absolute inset-0 flex items-center justify-center"
           aria-hidden

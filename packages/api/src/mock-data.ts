@@ -21,38 +21,47 @@ const inTwoDays = "2026-07-16T23:00:00.000Z";
 const endedRecent = "2026-07-12T21:00:00.000Z";
 const endedOlder = "2026-07-06T17:00:00.000Z";
 
-/** Studio / music Unsplash placeholders (prototype-safe). */
+/** Studio / music / lifestyle placeholders (prototype-safe, unique per slot). */
+const u = (id: string, w = 1280) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&h=${Math.round((w * 9) / 16)}&q=80`;
+
 const IMG = {
-  studioNight:
-    "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1280&q=80",
-  studioWarm:
-    "https://images.unsplash.com/photo-1516280440614-6697288d5d38?auto=format&fit=crop&w=1280&q=80",
-  micClose:
-    "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?auto=format&fit=crop&w=1280&q=80",
-  concert:
-    "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=1280&q=80",
-  vinyl:
-    "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?auto=format&fit=crop&w=1280&q=80",
-  cinema:
-    "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1280&q=80",
-  podcast:
-    "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=1280&q=80",
-  cityNight:
-    "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1280&q=80",
-  kitchen:
-    "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1280&q=80",
-  road:
-    "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1280&q=80",
-  tech:
-    "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1280&q=80",
-  books:
-    "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1280&q=80",
-  logo:
-    "https://images.unsplash.com/photo-1611162616475-46b635cb495b?auto=format&fit=crop&w=200&q=80",
+  studioNight: u("photo-1598488035139-bdbb2231ce04"),
+  studioWarm: u("photo-1516280440614-6697288d5d38"),
+  micClose: u("photo-1478737270239-2f02b77fc618"),
+  concert: u("photo-1470229722913-7c0e2dbbafd3"),
+  vinyl: u("photo-1571330735066-03aaa9429d89"),
+  cinema: u("photo-1485846234645-a62644f84728"),
+  podcast: u("photo-1590602847861-f357a9332bbc"),
+  cityNight: u("photo-1514525253161-7a46d19cd819"),
+  kitchen: u("photo-1556910103-1c02745aae4d"),
+  road: u("photo-1469854523086-cc02fe5d8800"),
+  tech: u("photo-1518770660439-4636190af475"),
+  books: u("photo-1524995997946-a1c2e315a42f"),
+  stageLights: u("photo-1501386761578-eac5c94b800a"),
+  headphones: u("photo-1484704849700-f032a568e944"),
+  radioDesk: u("photo-1478737270239-2f02b77fc618"),
+  crowd: u("photo-1459749411177-039925447475"),
+  coffeeTalk: u("photo-1543269865-cbf427effbad"),
+  gallery: u("photo-1460661419201-fd4cecdf8a8b"),
+  mountains: u("photo-1506905925346-21bda4d32df4"),
+  deskWork: u("photo-1497366216548-37526070297c"),
+  cooking: u("photo-1556911220-bff31c812dba"),
+  neonCity: u("photo-1514565131-fce0801e5785"),
+  acoustic: u("photo-1510915361894-db8b50135d2a"),
+  interview: u("photo-1560439513-74b037a25d84"),
+  logoNocturna: u("photo-1611162616475-46b635cb495b", 200),
+  logoCasa: u("photo-1511379938547-c1f69419868d", 200),
+  logoPrisma: u("photo-1481627834876-b7833e8f5570", 200),
+  logoHorizonte: u("photo-1469854523086-cc02fe5d8800", 200),
 } as const;
 
+/** Deterministic colorful fallback if a slot needs a unique still. */
+const still = (seed: string) =>
+  `https://picsum.photos/seed/hype-${encodeURIComponent(seed)}/1280/720`;
+
 const avatar = (seed: string) =>
-  `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80&sig=${encodeURIComponent(seed)}`;
+  `https://i.pravatar.cc/200?u=${encodeURIComponent(seed)}`;
 
 export const mockChannels: Channel[] = [
   {
@@ -61,7 +70,7 @@ export const mockChannels: Channel[] = [
     name: "Nocturna",
     description:
       "Entretenimiento, entrevistas y conversación nocturna. El estudio prende cuando la ciudad baja el volumen.",
-    logoUrl: `${IMG.logo}&sig=nocturna`,
+    logoUrl: IMG.logoNocturna,
     bannerUrl: IMG.studioNight,
     isVerified: true,
     createdAt: now,
@@ -77,7 +86,7 @@ export const mockChannels: Channel[] = [
     name: "Casa Sonora",
     description:
       "Música en vivo, artistas y conversaciones. Un living con micrófonos abiertos y sets íntimos.",
-    logoUrl: `${IMG.logo}&sig=casa-sonora`,
+    logoUrl: IMG.logoCasa,
     bannerUrl: IMG.concert,
     isVerified: true,
     createdAt: now,
@@ -93,7 +102,7 @@ export const mockChannels: Channel[] = [
     name: "Prisma",
     description:
       "Cultura, sociedad e ideas. Debates amables, libros, cine y miradas que abren el mapa.",
-    logoUrl: `${IMG.logo}&sig=prisma`,
+    logoUrl: IMG.logoPrisma,
     bannerUrl: IMG.cinema,
     isVerified: true,
     createdAt: now,
@@ -109,7 +118,7 @@ export const mockChannels: Channel[] = [
     name: "Horizonte",
     description:
       "Viajes, innovación y estilo de vida. Rutas, cocina real y proyectos que se animan a salir.",
-    logoUrl: `${IMG.logo}&sig=horizonte`,
+    logoUrl: IMG.logoHorizonte,
     bannerUrl: IMG.road,
     isVerified: true,
     createdAt: now,
@@ -612,7 +621,7 @@ const rawStreams: Stream[] = [
     startedAt: "2026-07-14T17:35:00.000Z",
     endedAt: null,
     viewerCount: 2140,
-    thumbnailUrl: IMG.studioNight,
+    thumbnailUrl: IMG.interview,
     playbackId: "pb_live_noche_001",
     provider: "mock",
     createdAt: now,
@@ -629,7 +638,7 @@ const rawStreams: Stream[] = [
     startedAt: "2026-07-14T17:10:00.000Z",
     endedAt: null,
     viewerCount: 3890,
-    thumbnailUrl: IMG.concert,
+    thumbnailUrl: IMG.stageLights,
     playbackId: "pb_live_sesion_001",
     provider: "mock",
     createdAt: now,
@@ -646,7 +655,7 @@ const rawStreams: Stream[] = [
     startedAt: "2026-07-14T17:25:00.000Z",
     endedAt: null,
     viewerCount: 1260,
-    thumbnailUrl: IMG.cinema,
+    thumbnailUrl: IMG.gallery,
     playbackId: "pb_live_cultura_001",
     provider: "mock",
     createdAt: now,
@@ -663,7 +672,7 @@ const rawStreams: Stream[] = [
     startedAt: "2026-07-14T17:18:00.000Z",
     endedAt: null,
     viewerCount: 980,
-    thumbnailUrl: IMG.tech,
+    thumbnailUrl: IMG.neonCity,
     playbackId: "pb_live_planeta_001",
     provider: "mock",
     createdAt: now,
@@ -680,7 +689,7 @@ const rawStreams: Stream[] = [
     startedAt: null,
     endedAt: null,
     viewerCount: 0,
-    thumbnailUrl: IMG.podcast,
+    thumbnailUrl: IMG.coffeeTalk,
     playbackId: null,
     provider: "mock",
     createdAt: now,
@@ -697,7 +706,7 @@ const rawStreams: Stream[] = [
     startedAt: null,
     endedAt: null,
     viewerCount: 0,
-    thumbnailUrl: IMG.studioWarm,
+    thumbnailUrl: IMG.acoustic,
     playbackId: null,
     provider: "mock",
     createdAt: now,
@@ -714,7 +723,7 @@ const rawStreams: Stream[] = [
     startedAt: null,
     endedAt: null,
     viewerCount: 0,
-    thumbnailUrl: IMG.vinyl,
+    thumbnailUrl: IMG.headphones,
     playbackId: null,
     provider: "mock",
     createdAt: now,
@@ -732,7 +741,7 @@ const rawStreams: Stream[] = [
     startedAt: null,
     endedAt: null,
     viewerCount: 0,
-    thumbnailUrl: IMG.cityNight,
+    thumbnailUrl: IMG.crowd,
     playbackId: null,
     provider: "mock",
     createdAt: now,
@@ -766,7 +775,7 @@ const rawStreams: Stream[] = [
     startedAt: endedOlder,
     endedAt: "2026-07-06T18:05:00.000Z",
     viewerCount: 0,
-    thumbnailUrl: IMG.kitchen,
+    thumbnailUrl: IMG.cooking,
     playbackId: "pb_ended_cocina_001",
     provider: "mock",
     createdAt: now,
@@ -872,7 +881,7 @@ const rawEpisodes: Episode[] = [
     episodeNumber: 12,
     airedAt: "2026-07-01T22:00:00.000Z",
     durationSeconds: 5400,
-    thumbnailUrl: IMG.studioNight,
+    thumbnailUrl: still("ep-12-noche"),
     playbackId: "pb_ep_noche_12",
     status: "published",
     publishedAt: "2026-07-02T10:00:00.000Z",
@@ -890,7 +899,7 @@ const rawEpisodes: Episode[] = [
     episodeNumber: 13,
     airedAt: "2026-07-03T22:00:00.000Z",
     durationSeconds: 5100,
-    thumbnailUrl: IMG.cityNight,
+    thumbnailUrl: still("ep-13-ciudad"),
     playbackId: "pb_ep_noche_13",
     status: "published",
     publishedAt: "2026-07-04T11:00:00.000Z",
@@ -908,7 +917,7 @@ const rawEpisodes: Episode[] = [
     episodeNumber: 8,
     airedAt: "2026-07-05T21:00:00.000Z",
     durationSeconds: 4200,
-    thumbnailUrl: IMG.podcast,
+    thumbnailUrl: still("ep-mesa-08"),
     playbackId: "pb_ep_mesa_08",
     status: "published",
     publishedAt: "2026-07-06T09:00:00.000Z",
@@ -926,7 +935,7 @@ const rawEpisodes: Episode[] = [
     episodeNumber: 5,
     airedAt: "2026-07-02T20:00:00.000Z",
     durationSeconds: 3600,
-    thumbnailUrl: IMG.concert,
+    thumbnailUrl: still("ep-sesion-05"),
     playbackId: "pb_ep_sesion_05",
     status: "published",
     publishedAt: "2026-07-03T12:00:00.000Z",
@@ -1052,7 +1061,7 @@ const rawEpisodes: Episode[] = [
     episodeNumber: 2,
     airedAt: "2026-06-20T11:00:00.000Z",
     durationSeconds: 2400,
-    thumbnailUrl: IMG.road,
+    thumbnailUrl: IMG.mountains,
     playbackId: "pb_ep_ruta_02",
     status: "published",
     publishedAt: "2026-06-21T08:00:00.000Z",
@@ -1088,7 +1097,7 @@ const rawEpisodes: Episode[] = [
     episodeNumber: 6,
     airedAt: "2026-07-09T18:30:00.000Z",
     durationSeconds: 2800,
-    thumbnailUrl: IMG.podcast,
+    thumbnailUrl: IMG.deskWork,
     playbackId: "pb_ep_emprender_06",
     status: "published",
     publishedAt: "2026-07-10T09:00:00.000Z",

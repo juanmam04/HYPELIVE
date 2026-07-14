@@ -31,7 +31,7 @@ export function ProgramCard({
           seed={program.id + program.title}
           className="absolute inset-0"
         />
-        <div className="card-overlay absolute inset-0 bg-gradient-to-t from-ink via-ink/45 to-transparent" />
+        <div className="card-overlay absolute inset-0 bg-gradient-to-t from-ink via-ink/35 to-transparent" />
         {program.isLive ? (
           <div className="absolute left-2 top-2 z-[1]">
             <LiveBadge compact />

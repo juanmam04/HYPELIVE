@@ -121,7 +121,7 @@ img {
 }
 
 .card-hover:hover .card-overlay {
-  background-color: rgba(7, 9, 13, 0.55);
+  background-color: rgba(7, 9, 13, 0.28);
 }
 
 .card-hover .card-meta {

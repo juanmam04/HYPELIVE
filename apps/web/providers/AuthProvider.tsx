@@ -11,7 +11,13 @@ import {
 } from "react";
 import type { User } from "@supabase/supabase-js";
 import { logger } from "@hypelive/analytics";
-import { signIn, signOut, signUp, type AuthSession } from "@hypelive/auth";
+import {
+  getProfileForUser,
+  signIn,
+  signOut,
+  signUp,
+  type AuthSession,
+} from "@hypelive/auth";
 import type { Profile } from "@hypelive/types";
 import { createClient, hasSupabaseBrowser } from "@/lib/supabase/client";
 import { isDemoMode } from "@/lib/env";
@@ -54,20 +60,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const demoMode = isDemoMode();
   const configured = hasSupabaseBrowser();
 
+  const loadProfile = useCallback(async (userId: string) => {
+    const client = createClient();
+    if (!client) return null;
+    try {
+      return await getProfileForUser(client, userId);
+    } catch (error) {
+      logger.warn("Profile load failed", error);
+      return null;
+    }
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
+    let unsubscribe: (() => void) | undefined;
 
     async function boot() {
       if (!configured) {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        if (!cancelled) setLoading(false);
         return;
       }
 
       const client = createClient();
       if (!client) {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
         return;
       }
 
@@ -82,6 +98,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             user: data.session.user,
           });
           setUser(data.session.user);
+          const p = await loadProfile(data.session.user.id);
+          if (!cancelled) setProfile(p);
         }
       } catch (error) {
         logger.warn("Auth boot failed", error);
@@ -90,30 +108,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const { data: sub } = client.auth.onAuthStateChange((_event, next) => {
-        if (!next) {
-          setSession(null);
-          setUser(null);
-          setProfile(null);
-          return;
-        }
-        setSession({
-          accessToken: next.access_token,
-          refreshToken: next.refresh_token,
-          expiresAt: next.expires_at ?? null,
-          user: next.user,
-        });
-        setUser(next.user);
+        void (async () => {
+          if (!next) {
+            setSession(null);
+            setUser(null);
+            setProfile(null);
+            return;
+          }
+          setSession({
+            accessToken: next.access_token,
+            refreshToken: next.refresh_token,
+            expiresAt: next.expires_at ?? null,
+            user: next.user,
+          });
+          setUser(next.user);
+          const p = await loadProfile(next.user.id);
+          if (!cancelled) setProfile(p);
+        })();
       });
 
-      return () => sub.subscription.unsubscribe();
+      unsubscribe = () => sub.subscription.unsubscribe();
     }
 
-    const cleanupPromise = boot();
+    void boot();
     return () => {
       cancelled = true;
-      void cleanupPromise.then((cleanup) => cleanup?.());
+      unsubscribe?.();
     };
-  }, [configured]);
+  }, [configured, loadProfile]);
 
   const signInWithPassword = useCallback(
     async (email: string, password: string) => {
@@ -126,8 +148,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const next = await signIn(client, { email, password });
       setSession(next);
       setUser(next.user);
+      const p = await loadProfile(next.user.id);
+      setProfile(p);
     },
-    [],
+    [loadProfile],
   );
 
   const signUpWithPassword = useCallback(
@@ -164,7 +188,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const enterDemoSession = useCallback(() => {
-    setProfile(DEMO_PROFILE as Profile);
+    setProfile(DEMO_PROFILE);
     setUser({ id: "demo-user", email: "demo@hypelive.local" } as User);
     logger.info("Entered demo session");
   }, []);
@@ -173,7 +197,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({
       user,
       session,
-      profile: profile ?? (user ? (DEMO_PROFILE as Profile) : null),
+      // Solo DEMO_PROFILE en modo demo; con Supabase real no inventar perfil.
+      profile: profile ?? (demoMode && user ? DEMO_PROFILE : null),
       loading,
       demoMode,
       configured,

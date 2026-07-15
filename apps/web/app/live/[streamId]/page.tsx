@@ -40,7 +40,6 @@ export default function LivePage({
   const { toast } = useToast();
   const [followingChannel, setFollowingChannel] = useState(false);
   const [followingProgram, setFollowingProgram] = useState(false);
-  const [forceMode, setForceMode] = useState<PlayerMode | null>(null);
 
   const streamQuery = useQuery(streamQueryOptions(streamId, apiOptions()));
   const feedQuery = useQuery(homeFeedQueryOptions(apiOptions()));
@@ -49,13 +48,12 @@ export default function LivePage({
   const feed = feedQuery.data ? normalizeHomeFeed(feedQuery.data) : null;
 
   const mode: PlayerMode = useMemo(() => {
-    if (forceMode) return forceMode;
     if (!stream) return "live";
     if (stream.status === "ended") return "ended";
     if (stream.status === "failed") return "error";
     if (stream.status === "live") return "live";
     return "live";
-  }, [forceMode, stream]);
+  }, [stream]);
 
   async function onFollowChannel() {
     if (!stream?.channelId) return;
@@ -228,33 +226,6 @@ export default function LivePage({
                     >
                       <Share2 className="size-4" /> Compartir
                     </Button>
-                    {mode === "live" ? (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setForceMode("reconnect")}
-                      >
-                        Simular reconexión
-                      </Button>
-                    ) : null}
-                    {mode === "reconnect" ? (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setForceMode("live")}
-                      >
-                        Recuperar
-                      </Button>
-                    ) : null}
-                    {mode !== "ended" ? (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setForceMode("ended")}
-                      >
-                        Fin
-                      </Button>
-                    ) : null}
                   </div>
                 </div>
 
@@ -288,7 +259,7 @@ export default function LivePage({
               <div className="lg:sticky lg:top-20 lg:self-start">
                 <LiveChat
                   streamId={stream.id}
-                  enabled={mode === "live" || mode === "reconnect"}
+                  enabled={mode === "live"}
                   className="h-[min(70vh,640px)]"
                 />
               </div>

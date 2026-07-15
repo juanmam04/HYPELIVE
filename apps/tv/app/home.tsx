@@ -26,11 +26,12 @@ import {
   resolveChannelSlug,
   type HomeFeedView,
 } from "../src/lib/feed";
+import { apiOptions } from "../src/lib/api-options";
 import { OVERSCAN } from "../src/lib/theme";
 
 export default function HomeScreen() {
   const { data, isLoading, isError, refetch } = useQuery(
-    homeFeedQueryOptions({ useMock: true }),
+    homeFeedQueryOptions(apiOptions()),
   );
 
   useEffect(() => {

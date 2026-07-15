@@ -10,13 +10,13 @@ type BrandLogoProps = {
 };
 
 const sizes = {
-  sm: { mark: "size-7", text: "text-[15px]", gap: "gap-2" },
-  md: { mark: "size-8", text: "text-[19px]", gap: "gap-2.5" },
-  lg: { mark: "size-11", text: "text-[26px]", gap: "gap-3" },
+  sm: { mark: "h-6 w-6", word: "h-4 w-[88px]", text: "text-[15px]" },
+  md: { mark: "h-7 w-7", word: "h-5 w-[110px]", text: "text-[19px]" },
+  lg: { mark: "h-10 w-10", word: "h-7 w-[152px]", text: "text-[26px]" },
 } as const;
 
 /**
- * Brand lockup: H monogram + wordmark.
+ * Brand lockup — typographic wordmark (no fragile composite SVG letters).
  */
 export function BrandLogo({
   href = "/",
@@ -27,23 +27,11 @@ export function BrandLogo({
   const s = sizes[size];
 
   const content = (
-    <span className={cn("inline-flex items-center", s.gap, "select-none", className)}>
-      <BrandMark className={s.mark} />
-      {markOnly ? null : (
-        <span className="flex flex-col leading-none">
-          <span
-            className={cn(
-              "font-extrabold uppercase tracking-[0.18em] text-text-primary",
-              s.text,
-            )}
-          >
-            {APP_NAME}
-          </span>
-          <span
-            className="mt-[3px] h-[2px] w-full rounded-full bg-accent"
-            aria-hidden
-          />
-        </span>
+    <span className={cn("inline-flex items-center select-none", className)}>
+      {markOnly ? (
+        <BrandMark className={s.mark} />
+      ) : (
+        <BrandWordmark className={s.text} />
       )}
     </span>
   );
@@ -61,22 +49,36 @@ export function BrandLogo({
   );
 }
 
-/** H monogram — reads as a brand mark, not a generic play button. */
+/** Compact monogram — H with accent crossbar. */
 export function BrandMark({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 40 40"
-      className={cn("shrink-0", className)}
+      className={cn("shrink-0 text-text-primary", className)}
       aria-hidden
     >
-      <rect width="40" height="40" rx="9" fill="#3D7EEA" />
-      {/* Stylized H */}
-      <path
-        fill="#F5F7FA"
-        d="M11 9h5.2v8.2h7.6V9H29v22h-5.2v-8.4h-7.6V31H11V9z"
-      />
-      {/* Small play notch in the crossbar — streaming cue without looking like a stock icon */}
-      <path fill="#3D7EEA" d="M19.2 17.4h1.7l2.6 2.6-2.6 2.6h-1.7l2.55-2.6z" />
+      <rect x="8" y="6" width="5.5" height="28" fill="currentColor" />
+      <rect x="26.5" y="6" width="5.5" height="28" fill="currentColor" />
+      <rect x="13.5" y="17" width="13" height="6" fill="#3D7EEA" />
     </svg>
+  );
+}
+
+/**
+ * Wordmark — real type, not path-built letters.
+ * Accent: first letter in brand blue (stable, network-readable).
+ */
+export function BrandWordmark({ className }: { className?: string }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-baseline font-extrabold uppercase leading-none tracking-[-0.045em] text-text-primary",
+        className,
+      )}
+      aria-hidden
+    >
+      <span className="text-accent">H</span>
+      <span>YPE</span>
+    </span>
   );
 }

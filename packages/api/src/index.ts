@@ -45,6 +45,7 @@ export {
   chatQueryOptions,
   watchProgressQueryOptions,
   studioQueryOptions,
+  searchQueryOptions,
 } from "./hooks";
 export {
   mockChannels,
@@ -58,3 +59,5 @@ export {
   mockHomeFeed,
   mockStudioSummary,
 } from "./mock-data";
+export { searchCatalog } from "./search";
+export type { SearchHit, SearchHitKind } from "./search";

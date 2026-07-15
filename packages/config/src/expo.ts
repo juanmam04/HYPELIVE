@@ -57,8 +57,10 @@ export function hasExpoSupabaseEnv(
 ): boolean {
   const parsed = expoEnvSchema.safeParse(env);
   if (!parsed.success) return false;
-  return Boolean(
-    parsed.data.EXPO_PUBLIC_SUPABASE_URL &&
-      parsed.data.EXPO_PUBLIC_SUPABASE_ANON_KEY,
-  );
+  const url = parsed.data.EXPO_PUBLIC_SUPABASE_URL;
+  const key = parsed.data.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) return false;
+  // Placeholder / CI stubs are not a real backend — keep demo mode.
+  if (key === "public-anon-key-for-ci" || key.length < 20) return false;
+  return true;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useMemo, useState } from "react";
+import { use, useMemo } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -20,6 +20,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
+import { SaveButton } from "@/components/content/SaveButton";
 import { useAuth } from "@/providers/AuthProvider";
 import { apiOptions } from "@/lib/api-options";
 import {
@@ -35,7 +36,6 @@ export default function WatchEpisodePage({
 }) {
   const { episodeId } = use(params);
   const { user, profile } = useAuth();
-  const [forceMode, setForceMode] = useState<PlayerMode | null>(null);
 
   const episodeQuery = useQuery(
     episodeQueryOptions(episodeId, apiOptions()),
@@ -73,14 +73,13 @@ export default function WatchEpisodePage({
       : 0);
 
   const mode: PlayerMode = useMemo(() => {
-    if (forceMode) return forceMode;
     if (!episode) return "vod";
     if (episode.status === "processing") return "processing";
     if (episode.status === "unavailable" || episode.status === "archived")
       return "unavailable";
     if (episode.status === "draft") return "unavailable";
     return "vod";
-  }, [forceMode, episode]);
+  }, [episode]);
 
   async function onProgressChange(seconds: number) {
     if (!episode || !user) return;
@@ -193,6 +192,16 @@ export default function WatchEpisodePage({
                 </div>
 
                 <div className="mt-4 flex flex-wrap gap-2">
+                  <SaveButton
+                    item={{
+                      id: episode.id,
+                      kind: "episode",
+                      title: episode.title,
+                      href: `/watch/${episode.id}`,
+                      thumbnailUrl: episode.thumbnailUrl,
+                      subtitle: episode.program?.title ?? episode.channel?.name,
+                    }}
+                  />
                   {nextPrevQuery.data?.prev ? (
                     <Link href={`/watch/${nextPrevQuery.data.prev.id}`}>
                       <Button size="sm" variant="secondary">
@@ -207,27 +216,6 @@ export default function WatchEpisodePage({
                       </Button>
                     </Link>
                   ) : null}
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setForceMode("processing")}
-                  >
-                    Procesando
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setForceMode("unavailable")}
-                  >
-                    No disponible
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setForceMode(null)}
-                  >
-                    Reset
-                  </Button>
                 </div>
               </div>
 

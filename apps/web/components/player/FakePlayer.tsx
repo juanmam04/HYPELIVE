@@ -1,14 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import {
   Maximize2,
+  Minimize2,
   Pause,
   Play,
   Volume2,
+  VolumeX,
   WifiOff,
   Loader2,
   Radio,
+  Settings2,
 } from "lucide-react";
 import { formatDuration, formatViewerCount } from "@hypelive/domain";
 import { logger } from "@hypelive/analytics";
@@ -32,6 +35,9 @@ export type PlayerMode =
   | "processing"
   | "error"
   | "unavailable";
+
+const QUALITIES = ["Auto", "1080p", "720p", "480p"] as const;
+type Quality = (typeof QUALITIES)[number];
 
 export function FakePlayer({
   id,
@@ -58,12 +64,20 @@ export function FakePlayer({
   nextLabel?: string;
   className?: string;
 }) {
+  const rootRef = useRef<HTMLDivElement>(null);
   const [playing, setPlaying] = useState(
     mode === "live" || mode === "vod" || mode === "paused",
   );
   const [localProgress, setLocalProgress] = useState(progress);
   const [showControls, setShowControls] = useState(true);
-  const [bootLoading, setBootLoading] = useState(mode === "loading" || mode === "idle");
+  const [bootLoading, setBootLoading] = useState(
+    mode === "loading" || mode === "idle",
+  );
+  const [muted, setMuted] = useState(false);
+  const [volume, setVolume] = useState(0.85);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [quality, setQuality] = useState<Quality>("Auto");
+  const [qualityOpen, setQualityOpen] = useState(false);
   const hideTimer = useRef<number | null>(null);
 
   useEffect(() => {
@@ -92,21 +106,108 @@ export function FakePlayer({
     return () => window.clearInterval(timer);
   }, [playing, mode, duration, onProgressChange]);
 
-  function bumpControls() {
+  const bumpControls = useCallback(() => {
     setShowControls(true);
     if (hideTimer.current) window.clearTimeout(hideTimer.current);
     hideTimer.current = window.setTimeout(() => {
       if (playing && (mode === "live" || mode === "vod")) {
         setShowControls(false);
+        setQualityOpen(false);
       }
-    }, 2600);
-  }
+    }, 2800);
+  }, [playing, mode]);
 
   useEffect(() => {
     return () => {
       if (hideTimer.current) window.clearTimeout(hideTimer.current);
     };
   }, []);
+
+  useEffect(() => {
+    function onFs() {
+      setFullscreen(Boolean(document.fullscreenElement));
+    }
+    document.addEventListener("fullscreenchange", onFs);
+    return () => document.removeEventListener("fullscreenchange", onFs);
+  }, []);
+
+  const togglePlay = useCallback(() => {
+    setPlaying((p) => !p);
+    bumpControls();
+  }, [bumpControls]);
+
+  const toggleMute = useCallback(() => {
+    setMuted((m) => !m);
+    bumpControls();
+  }, [bumpControls]);
+
+  const toggleFullscreen = useCallback(async () => {
+    const el = rootRef.current;
+    if (!el) return;
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else {
+        await el.requestFullscreen();
+      }
+    } catch (error) {
+      logger.warn("Fullscreen failed", error);
+    }
+    bumpControls();
+  }, [bumpControls]);
+
+  const seekBy = useCallback(
+    (delta: number) => {
+      if (mode !== "vod" || duration <= 0) return;
+      setLocalProgress((prev) => {
+        const next = Math.max(0, Math.min(duration, prev + delta));
+        onProgressChange?.(next);
+        return next;
+      });
+      bumpControls();
+    },
+    [mode, duration, onProgressChange, bumpControls],
+  );
+
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+
+    function onKey(e: KeyboardEvent) {
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+
+      const key = e.key.toLowerCase();
+      if (key === " " || key === "k") {
+        e.preventDefault();
+        togglePlay();
+      } else if (key === "m") {
+        e.preventDefault();
+        toggleMute();
+      } else if (key === "f") {
+        e.preventDefault();
+        void toggleFullscreen();
+      } else if (key === "arrowright") {
+        e.preventDefault();
+        seekBy(10);
+      } else if (key === "arrowleft") {
+        e.preventDefault();
+        seekBy(-10);
+      } else if (key === "arrowup") {
+        e.preventDefault();
+        setVolume((v) => Math.min(1, v + 0.05));
+        setMuted(false);
+        bumpControls();
+      } else if (key === "arrowdown") {
+        e.preventDefault();
+        setVolume((v) => Math.max(0, v - 0.05));
+        bumpControls();
+      }
+    }
+
+    el.addEventListener("keydown", onKey);
+    return () => el.removeEventListener("keydown", onKey);
+  }, [togglePlay, toggleMute, toggleFullscreen, seekBy, bumpControls]);
 
   const overlayTitle =
     mode === "ended"
@@ -124,6 +225,7 @@ export function FakePlayer({
   const isLiveMode = mode === "live";
   const showPlaySurface =
     !overlayTitle && !bootLoading && mode !== "buffering";
+  const effectiveMuted = muted || volume === 0;
 
   if (bootLoading && mode === "loading") {
     return <PlayerSkeleton />;
@@ -131,8 +233,13 @@ export function FakePlayer({
 
   return (
     <div
+      ref={rootRef}
+      tabIndex={0}
+      role="region"
+      aria-label={`Reproductor: ${title}`}
       className={cn(
-        "relative overflow-hidden rounded border border-border-subtle bg-charcoal",
+        "relative overflow-hidden rounded border border-border-subtle bg-charcoal outline-none focus-visible:ring-2 focus-visible:ring-accent",
+        fullscreen && "rounded-none border-0",
         className,
       )}
       onMouseMove={bumpControls}
@@ -167,6 +274,9 @@ export function FakePlayer({
                 {formatViewerCount(viewerCount)} viendo
               </span>
             ) : null}
+            <span className="rounded bg-ink/80 px-2 py-1 text-[11px] text-text-muted">
+              {quality}
+            </span>
           </div>
         ) : null}
 
@@ -227,10 +337,7 @@ export function FakePlayer({
               "absolute inset-0 z-10 flex items-center justify-center transition-opacity duration-fast",
               showControls || !playing ? "opacity-100" : "opacity-0",
             )}
-            onClick={() => {
-              setPlaying((p) => !p);
-              bumpControls();
-            }}
+            onClick={togglePlay}
             aria-label={playing ? "Pausar" : "Reproducir"}
           >
             <span className="btn-press flex size-14 items-center justify-center rounded-full bg-ink/70 text-white hover:bg-ink/85">
@@ -278,10 +385,7 @@ export function FakePlayer({
               <IconButton
                 label={playing ? "Pausar" : "Reproducir"}
                 size="sm"
-                onClick={() => {
-                  setPlaying((p) => !p);
-                  bumpControls();
-                }}
+                onClick={togglePlay}
                 disabled={Boolean(overlayTitle)}
               >
                 {playing ? (
@@ -290,16 +394,88 @@ export function FakePlayer({
                   <Play className="size-4" />
                 )}
               </IconButton>
-              <IconButton label="Volumen" size="sm">
-                <Volume2 className="size-4" />
-              </IconButton>
-              <span className="ml-2 hidden truncate text-sm text-text-secondary sm:inline">
+              <div className="flex items-center gap-1">
+                <IconButton
+                  label={effectiveMuted ? "Activar sonido" : "Silenciar"}
+                  size="sm"
+                  onClick={toggleMute}
+                >
+                  {effectiveMuted ? (
+                    <VolumeX className="size-4" />
+                  ) : (
+                    <Volume2 className="size-4" />
+                  )}
+                </IconButton>
+                <input
+                  type="range"
+                  min={0}
+                  max={1}
+                  step={0.05}
+                  value={effectiveMuted ? 0 : volume}
+                  onChange={(e) => {
+                    const next = Number(e.target.value);
+                    setVolume(next);
+                    setMuted(next === 0);
+                    bumpControls();
+                  }}
+                  className="hidden h-1 w-20 cursor-pointer appearance-none rounded-full bg-white/20 accent-accent sm:block"
+                  aria-label="Volumen"
+                />
+              </div>
+              <span className="ml-2 hidden truncate text-sm text-text-secondary md:inline">
                 {title}
               </span>
             </div>
-            <IconButton label="Pantalla completa" size="sm">
-              <Maximize2 className="size-4" />
-            </IconButton>
+            <div className="relative flex items-center gap-1">
+              <IconButton
+                label="Calidad"
+                size="sm"
+                onClick={() => {
+                  setQualityOpen((o) => !o);
+                  bumpControls();
+                }}
+              >
+                <Settings2 className="size-4" />
+              </IconButton>
+              {qualityOpen ? (
+                <div className="absolute bottom-10 right-0 z-40 min-w-[7.5rem] overflow-hidden rounded border border-border bg-charcoal shadow-deep">
+                  {QUALITIES.map((q) => (
+                    <button
+                      key={q}
+                      type="button"
+                      className={cn(
+                        "block w-full px-3 py-2 text-left text-sm transition-colors hover:bg-elevated",
+                        q === quality
+                          ? "text-accent-soft"
+                          : "text-text-secondary",
+                      )}
+                      onClick={() => {
+                        setQuality(q);
+                        setQualityOpen(false);
+                        bumpControls();
+                      }}
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+              <IconButton
+                label={
+                  fullscreen
+                    ? "Salir de pantalla completa"
+                    : "Pantalla completa"
+                }
+                size="sm"
+                onClick={() => void toggleFullscreen()}
+              >
+                {fullscreen ? (
+                  <Minimize2 className="size-4" />
+                ) : (
+                  <Maximize2 className="size-4" />
+                )}
+              </IconButton>
+            </div>
           </div>
         </div>
       </div>

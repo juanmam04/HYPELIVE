@@ -10,12 +10,13 @@ import { ContentCard } from "../../../src/components/ContentCard";
 import { EmptyState } from "../../../src/components/EmptyState";
 import { ErrorState } from "../../../src/components/ErrorState";
 import { Skeleton } from "../../../src/components/Skeleton";
+import { apiOptions } from "../../../src/lib/api-options";
 import { OVERSCAN } from "../../../src/lib/theme";
 
 export default function ChannelScreen() {
   const { channelSlug } = useLocalSearchParams<{ channelSlug: string }>();
   const { data, isLoading, isError, refetch } = useQuery(
-    channelDetailQueryOptions(channelSlug!, { useMock: true }),
+    channelDetailQueryOptions(channelSlug!, apiOptions()),
   );
 
   useEffect(() => {

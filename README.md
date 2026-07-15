@@ -4,7 +4,7 @@ Plataforma profesional de streaming en vivo para canales, programas y medios de 
 
 **Phase 0 — Product Foundation** está lista: monorepo con web, móvil, TV, backend Supabase compartido, autenticación, datos demo, chat realtime (o mock), sistema de diseño y CI.
 
-Identidad en UI: **HYPE LIVE** (`BRAND_NAME` en `@hypelive/domain`).
+Identidad en UI: **HYPE** (`BRAND_NAME` en `@hypelive/domain`).
 
 ## Stack
 
@@ -72,31 +72,42 @@ pnpm test
 pnpm build
 ```
 
-## Supabase local
+## Supabase
+
+**Cloud (conectar tu proyecto):** guía paso a paso en [`docs/setup.md`](docs/setup.md).
 
 ```bash
-# Instalar CLI: https://supabase.com/docs/guides/cli
-supabase start
-supabase db reset   # aplica migraciones + seed.sql
+pnpm db:link && pnpm db:push
+# Seed: SQL Editor con supabase/seed.sql  —o—  pnpm db:seed --remote
+# Pegá URL + anon key en apps/web/.env.local (y mobile/tv)
+pnpm supabase:check
+pnpm dev:web
+```
+
+**Local:**
+
+```bash
+pnpm db:start
+pnpm db:reset    # migraciones + seed
+pnpm db:status   # copiar URL/keys a los .env
 ```
 
 Detalles: `supabase/README.md`.
-
-Usuarios demo del seed (si corriste seed): ver `supabase/seed.sql` (password documentada allí).
 
 ## Scripts raíz
 
 | Script | Descripción |
 |--------|-------------|
-| `pnpm dev` | Dev paralelo (turbo) |
-| `pnpm dev:web` | Solo web |
+| `pnpm dev` | Dev (turbo) |
+| `pnpm dev:web` | Solo web → http://localhost:4748 |
 | `pnpm dev:mobile` | Solo mobile |
 | `pnpm dev:tv` | Solo TV |
-| `pnpm build` | Build de paquetes y web |
-| `pnpm lint` | ESLint |
-| `pnpm typecheck` | TypeScript |
-| `pnpm format` | Prettier |
-| `pnpm test` | Vitest / tests |
+| `pnpm build` | Build |
+| `pnpm lint` / `typecheck` / `test` / `format` | Calidad |
+| `pnpm db:link` / `db:push` | Vincular cloud + migraciones |
+| `pnpm db:start` / `db:reset` / `db:status` | Supabase local |
+| `pnpm db:seed` / `db:seed --remote` | Seed local / remoto |
+| `pnpm supabase:check` | Validar env + ping API |
 
 ## Problemas conocidos
 

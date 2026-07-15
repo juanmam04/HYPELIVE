@@ -10,12 +10,13 @@ import { EmptyState } from "../../src/components/EmptyState";
 import { ErrorState } from "../../src/components/ErrorState";
 import { FakePlayer } from "../../src/components/FakePlayer";
 import { Skeleton } from "../../src/components/Skeleton";
+import { apiOptions } from "../../src/lib/api-options";
 import { OVERSCAN } from "../../src/lib/theme";
 
 export default function WatchScreen() {
   const { videoId } = useLocalSearchParams<{ videoId: string }>();
   const { data, isLoading, isError, refetch } = useQuery(
-    episodeQueryOptions(videoId!, { useMock: true }),
+    episodeQueryOptions(videoId!, apiOptions()),
   );
 
   useEffect(() => {

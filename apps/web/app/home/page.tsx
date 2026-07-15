@@ -266,17 +266,18 @@ export default function HomePage() {
             </section>
 
             <section>
-              <SectionHeader title="Mi lista" href="/mi-lista" />
+              <SectionHeader title="Seguir viendo" href="/mi-lista" />
               {feed.continueWatching.length === 0 ? (
                 <EmptyState
-                  title="Todavía no guardaste contenido."
+                  title="Todavía no hay progreso."
+                  description="Los episodios que empieces a ver aparecen acá."
                   actionLabel="Explorar programas"
                   onAction={() => {
                     window.location.href = "/programas";
                   }}
                 />
               ) : (
-                <ContentRow ariaLabel="Mi lista">
+                <ContentRow ariaLabel="Seguir viendo">
                   {feed.continueWatching.slice(0, 8).map((episode) => (
                     <div
                       key={episode.id}

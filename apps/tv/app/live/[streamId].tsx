@@ -14,17 +14,19 @@ import { ErrorState } from "../../src/components/ErrorState";
 import { FakePlayer } from "../../src/components/FakePlayer";
 import { LiveBadge } from "../../src/components/LiveBadge";
 import { Skeleton } from "../../src/components/Skeleton";
+import { apiOptions } from "../../src/lib/api-options";
 import { OVERSCAN } from "../../src/lib/theme";
 
 export default function LiveScreen() {
   const { streamId } = useLocalSearchParams<{ streamId: string }>();
   const [chatOpen, setChatOpen] = useState(true);
   const [paused, setPaused] = useState(false);
+  const opts = apiOptions();
 
   const { data, isLoading, isError, refetch } = useQuery(
-    streamQueryOptions(streamId!, { useMock: true }),
+    streamQueryOptions(streamId!, opts),
   );
-  const chat = useQuery(chatQueryOptions(streamId!, { useMock: true }));
+  const chat = useQuery(chatQueryOptions(streamId!, opts));
 
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {

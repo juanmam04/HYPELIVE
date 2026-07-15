@@ -24,6 +24,7 @@ import {
   getWatchProgress,
   type ApiClientOptions,
 } from "./queries";
+import { searchCatalog } from "./search";
 
 export function homeFeedQueryOptions(options?: ApiClientOptions) {
   return {
@@ -166,5 +167,14 @@ export function studioQueryOptions(
   return {
     queryKey: queryKeys.studio(channelId),
     queryFn: () => getStudioSummary(channelId, options),
+  };
+}
+
+export function searchQueryOptions(query: string, options?: ApiClientOptions) {
+  const q = query.trim();
+  return {
+    queryKey: queryKeys.search(q),
+    queryFn: () => searchCatalog(q, options),
+    enabled: q.length >= 2,
   };
 }

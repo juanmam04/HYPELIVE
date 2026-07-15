@@ -25,4 +25,5 @@ export const queryKeys = {
     [...queryKeys.all, "watch-progress", userId, episodeId] as const,
   studio: (channelId?: string) =>
     [...queryKeys.all, "studio", channelId ?? "default"] as const,
+  search: (q: string) => [...queryKeys.all, "search", q] as const,
 } as const;

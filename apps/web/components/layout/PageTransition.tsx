@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { usePathname } from "next/navigation";
+import { type ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 /**
- * Discrete content fade on route change. Shell stays stable.
+ * Shell content wrapper — no remount flash, no dimming on navigate.
+ * Instant feel; data comes from React Query cache.
  */
 export function PageTransition({
   children,
@@ -14,20 +14,5 @@ export function PageTransition({
   children: ReactNode;
   className?: string;
 }) {
-  const pathname = usePathname();
-  const [animKey, setAnimKey] = useState(pathname);
-  const prev = useRef(pathname);
-
-  useEffect(() => {
-    if (prev.current !== pathname) {
-      prev.current = pathname;
-      setAnimKey(pathname);
-    }
-  }, [pathname]);
-
-  return (
-    <div key={animKey} className={cn("page-enter", className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn("relative", className)}>{children}</div>;
 }

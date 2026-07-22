@@ -84,7 +84,12 @@ export async function signUp(
     displayName: string;
     username: string;
   },
-): Promise<{ session: AuthSession | null; user: User; profile: Profile }> {
+): Promise<{
+  session: AuthSession | null;
+  user: User;
+  profile: Profile | null;
+  needsEmailConfirmation: boolean;
+}> {
   const { data, error } = await client.auth.signUp({
     email: input.email,
     password: input.password,
@@ -97,22 +102,57 @@ export async function signUp(
   });
 
   if (error || !data.user) {
-    throw new AppError("validation", error?.message ?? "Sign up failed", {
-      cause: error,
-    });
+    throw new AppError(
+      "validation",
+      mapAuthError(error?.message ?? "No se pudo crear la cuenta"),
+      { cause: error },
+    );
   }
 
-  const profile = await ensureProfile(client, {
-    userId: data.user.id,
-    displayName: input.displayName,
-    username: input.username,
-  });
+  // Trigger creates the profile; give it a moment, then read (or insert own row).
+  let profile =
+    (await getProfileForUser(client, data.user.id).catch(() => null)) ?? null;
+
+  if (!profile && data.session) {
+    profile = await ensureProfile(client, {
+      userId: data.user.id,
+      displayName: input.displayName,
+      username: input.username,
+    }).catch(() => null);
+  }
+
+  if (!profile) {
+    // Retry once — trigger can lag slightly behind signup response.
+    await new Promise((r) => setTimeout(r, 400));
+    profile = await getProfileForUser(client, data.user.id).catch(() => null);
+  }
 
   return {
     session: data.session ? toAuthSession(data.session) : null,
     user: data.user,
     profile,
+    needsEmailConfirmation: !data.session,
   };
+}
+
+function mapAuthError(message: string): string {
+  const m = message.toLowerCase();
+  if (m.includes("rate limit") || m.includes("over_email")) {
+    return "Demasiados intentos. Esperá un minuto o desactivá “Confirm email” en Supabase Auth.";
+  }
+  if (m.includes("already registered") || m.includes("already been registered")) {
+    return "Ese email ya está registrado. Probá iniciar sesión.";
+  }
+  if (m.includes("email address") && m.includes("invalid")) {
+    return "Email inválido. Usá un correo real (ej. Gmail).";
+  }
+  if (m.includes("password")) {
+    return "La contraseña no cumple los requisitos de seguridad.";
+  }
+  if (m.includes("signup is disabled")) {
+    return "El registro está deshabilitado en el proyecto Supabase.";
+  }
+  return message;
 }
 
 export async function signOut(client: HypeliveSupabaseClient): Promise<void> {
@@ -145,9 +185,12 @@ export async function ensureProfile(
     .single();
 
   if (error || !data) {
+    // Race with trigger: profile may already exist.
+    const again = await getProfileForUser(client, input.userId);
+    if (again) return again;
     throw new AppError(
       "conflict",
-      error?.message ?? "Failed to create profile",
+      error?.message ?? "No se pudo crear el perfil",
       { cause: error },
     );
   }

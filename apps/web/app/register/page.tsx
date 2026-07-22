@@ -2,7 +2,6 @@
 
 import { Suspense, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { BRAND_NAME } from "@hypelive/domain";
 import { registerSchema } from "@hypelive/validation";
 import { logger } from "@hypelive/analytics";
@@ -11,9 +10,10 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useAuth } from "@/providers/AuthProvider";
 import { useToast } from "@/components/ui/Toast";
+import { useAppRouter } from "@/lib/use-app-router";
 
 function RegisterForm() {
-  const router = useRouter();
+  const { push } = useAppRouter();
   const { signUpWithPassword, demoMode, enterDemoSession, configured } =
     useAuth();
   const { toast } = useToast();
@@ -51,15 +51,23 @@ function RegisterForm() {
 
     setLoading(true);
     try {
-      await signUpWithPassword(parsed.data);
+      const result = await signUpWithPassword(parsed.data);
+      if (result.needsEmailConfirmation) {
+        toast("Revisá tu email para confirmar la cuenta", {
+          tone: "success",
+          description:
+            "O desactivá “Confirm email” en Supabase → Authentication → Providers → Email.",
+        });
+        push("/login");
+        return;
+      }
       toast("Cuenta creada", { tone: "success" });
-      router.push("/home");
+      push("/home");
     } catch (error) {
       logger.warn("Register failed", error);
       setFormError(
         error instanceof Error ? error.message : "No se pudo crear la cuenta",
       );
-    } finally {
       setLoading(false);
     }
   }
@@ -81,7 +89,7 @@ function RegisterForm() {
             className="mt-3"
             onClick={() => {
               enterDemoSession();
-              router.push("/home");
+              push("/home");
             }}
           >
             Continuar al inicio
@@ -144,10 +152,15 @@ function RegisterForm() {
           type="submit"
           className="w-full"
           loading={loading}
-          disabled={demoMode}
+          disabled={demoMode || loading}
         >
           Crear cuenta
         </Button>
+        {demoMode ? (
+          <p className="text-center text-xs text-text-muted">
+            Modo demo: falta `.env.local` o reiniciá el servidor.
+          </p>
+        ) : null}
       </form>
     </>
   );
@@ -158,7 +171,7 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-ink">
       <SiteHeader />
       <main className="mx-auto flex max-w-md flex-col px-4 py-14 sm:px-6">
-        <h1 className="text-3xl font-bold text-text-primary">
+        <h1 className="font-display text-3xl font-semibold tracking-tight text-text-primary">
           Unite a {BRAND_NAME}
         </h1>
         <p className="mt-2 text-sm text-text-muted">

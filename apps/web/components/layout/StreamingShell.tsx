@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
@@ -12,10 +12,10 @@ import { NotificationBell } from "@/components/layout/NotificationBell";
 import { SearchHitList } from "@/components/search/SearchHitList";
 import { Button } from "@/components/ui/Button";
 import { OfflineBanner } from "@/components/ui/OfflineBanner";
-import { NavigationProgress } from "@/components/layout/NavigationProgress";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { apiOptions } from "@/lib/api-options";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
+import { useAppRouter } from "@/lib/use-app-router";
 import { cn } from "@/lib/cn";
 import { useAuth } from "@/providers/AuthProvider";
 
@@ -29,7 +29,7 @@ const NAV = [
 
 export function StreamingShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
+  const { push } = useAppRouter();
   const reduce = useReducedMotion();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -53,10 +53,10 @@ export function StreamingShell({ children }: { children: React.ReactNode }) {
     const q = query.trim();
     closeSearch();
     if (!q) {
-      router.push("/buscar");
+      push("/buscar");
       return;
     }
-    router.push(`/buscar?q=${encodeURIComponent(q)}`);
+    push(`/buscar?q=${encodeURIComponent(q)}`);
   }
 
   useEffect(() => {
@@ -99,9 +99,8 @@ export function StreamingShell({ children }: { children: React.ReactNode }) {
       >
         Saltar al contenido
       </a>
-      <NavigationProgress />
       <OfflineBanner />
-      <header className="sticky top-0 z-[200] border-b border-white/5 bg-ink/95 backdrop-blur-md">
+      <header className="sticky top-0 z-[200] border-b border-white/[0.06] bg-gradient-to-b from-ink via-ink/90 to-ink/70 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-[1920px] items-center gap-4 px-4 sm:h-16 sm:px-8 lg:px-12">
           <button
             type="button"

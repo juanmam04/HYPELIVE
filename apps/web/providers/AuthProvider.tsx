@@ -35,7 +35,7 @@ type AuthContextValue = {
     password: string;
     displayName: string;
     username: string;
-  }) => Promise<void>;
+  }) => Promise<{ needsEmailConfirmation: boolean }>;
   signOutUser: () => Promise<void>;
   enterDemoSession: () => void;
 };
@@ -168,11 +168,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         );
       }
       const result = await signUp(client, input);
-      setProfile(result.profile as Profile);
+      if (result.profile) {
+        setProfile(result.profile as Profile);
+      }
       if (result.session) {
         setSession(result.session);
         setUser(result.session.user);
+      } else if (result.user) {
+        setUser(result.user);
       }
+      return { needsEmailConfirmation: result.needsEmailConfirmation };
     },
     [],
   );

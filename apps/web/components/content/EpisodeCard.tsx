@@ -29,7 +29,7 @@ export function EpisodeCard({
     <Link
       href={`/watch/${episode.id}`}
       className={cn(
-        "card-hover group block overflow-hidden rounded border border-border-subtle bg-slate",
+        "card-hover group block overflow-hidden rounded-xl border border-border-subtle bg-slate",
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
         className,
       )}

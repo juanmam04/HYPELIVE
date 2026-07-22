@@ -2,7 +2,7 @@
 
 import { Suspense, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { BRAND_NAME } from "@hypelive/domain";
 import { loginSchema } from "@hypelive/validation";
 import { logger } from "@hypelive/analytics";
@@ -11,9 +11,10 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useAuth } from "@/providers/AuthProvider";
 import { useToast } from "@/components/ui/Toast";
+import { useAppRouter } from "@/lib/use-app-router";
 
 function LoginForm() {
-  const router = useRouter();
+  const { push } = useAppRouter();
   const params = useSearchParams();
   const next = params.get("next") || "/home";
   const { signInWithPassword, demoMode, enterDemoSession, configured } =
@@ -51,13 +52,12 @@ function LoginForm() {
     try {
       await signInWithPassword(parsed.data.email, parsed.data.password);
       toast("Sesión iniciada", { tone: "success" });
-      router.push(next);
+      push(next);
     } catch (error) {
       logger.warn("Login failed", error);
       setFormError(
         error instanceof Error ? error.message : "No se pudo iniciar sesión",
       );
-    } finally {
       setLoading(false);
     }
   }
@@ -80,7 +80,7 @@ function LoginForm() {
               variant="secondary"
               onClick={() => {
                 enterDemoSession();
-                router.push("/home");
+                push("/home");
               }}
             >
               Continuar al inicio
@@ -143,7 +143,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-ink">
       <SiteHeader />
       <main className="mx-auto flex max-w-md flex-col px-4 py-14 sm:px-6">
-        <h1 className="text-3xl font-bold text-text-primary">
+        <h1 className="font-display text-3xl font-semibold tracking-tight text-text-primary">
           Entrar a {BRAND_NAME}
         </h1>
         <p className="mt-2 text-sm text-text-muted">

@@ -53,7 +53,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
-        display: ["var(--font-sans)", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "Times New Roman", "serif"],
         mono: ["ui-monospace", "monospace"],
       },
       borderRadius: {
@@ -86,8 +86,9 @@ const config: Config = {
         "2xl": `${breakpoints["2xl"]}px`,
       },
       boxShadow: {
-        soft: "0 4px 12px rgba(0, 0, 0, 0.45)",
-        deep: "0 8px 24px rgba(0, 0, 0, 0.5)",
+        soft: "0 8px 24px rgba(0, 0, 0, 0.4)",
+        deep: "0 16px 40px rgba(0, 0, 0, 0.55)",
+        glow: "0 0 24px rgba(0, 99, 229, 0.35)",
       },
       keyframes: {
         pulseLive: {

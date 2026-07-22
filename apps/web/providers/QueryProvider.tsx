@@ -9,9 +9,13 @@ export function QueryProvider({ children }: { children: ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 30_000,
+            // Keep screens instant when jumping between shared feeds.
+            staleTime: 5 * 60_000,
+            gcTime: 30 * 60_000,
             retry: 1,
             refetchOnWindowFocus: false,
+            refetchOnReconnect: false,
+            placeholderData: (previousData: unknown) => previousData,
           },
         },
       }),

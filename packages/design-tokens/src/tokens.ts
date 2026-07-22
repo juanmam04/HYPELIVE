@@ -1,53 +1,54 @@
 /**
- * HYPE LIVE design tokens — commercial streaming platform.
- * Dark blue-black surfaces, sober blue accent, red only for LIVE/errors.
+ * HYPE design tokens — cinematic streaming (Disney+-inspired atmosphere).
+ * Deep night blues, signature blue CTAs, warm gold for brand sparkle.
+ * Red only for LIVE / danger. Brand name remains HYPE (not Disney IP).
  */
 
 export const colors = {
-  // Surfaces — black / very dark blue
-  ink: "#07090D",
-  charcoal: "#0C1017",
-  slate: "#141A24",
-  elevated: "#1A2230",
-  overlay: "rgba(7, 9, 13, 0.78)",
+  // Surfaces — deep cinematic night
+  ink: "#03060F",
+  charcoal: "#0A1020",
+  slate: "#141B2E",
+  elevated: "#1C2540",
+  overlay: "rgba(3, 6, 15, 0.82)",
 
-  // Neutrals
-  white: "#F5F7FA",
-  mist: "#C5CDD8",
-  ash: "#8B95A5",
-  stone: "#5C6573",
-  border: "#2A3344",
-  borderSubtle: "#1C2433",
+  // Neutrals — soft silver whites
+  white: "#F7F8FC",
+  mist: "#C8D0E0",
+  ash: "#8E9BB3",
+  stone: "#5A667C",
+  border: "#2A3550",
+  borderSubtle: "#1A2238",
 
-  // Accent — sober blue (primary CTAs, focus, links)
-  accent: "#3D7EEA",
-  accentHover: "#5B93F0",
-  accentMuted: "rgba(61, 126, 234, 0.16)",
-  accentSoft: "#8BB0F5",
+  // Accent — streaming blue (primary CTAs)
+  accent: "#0063E5",
+  accentHover: "#1A7AFF",
+  accentMuted: "rgba(0, 99, 229, 0.18)",
+  accentSoft: "#7EB6FF",
 
-  // Deprecated aliases kept for gradual migration (map to blue, not orange)
-  amber: "#8B95A5",
-  amberMuted: "rgba(139, 149, 165, 0.14)",
+  // Brand gold — magical / premium moments (replaces old amber alias)
+  amber: "#D4AF37",
+  amberMuted: "rgba(212, 175, 55, 0.16)",
 
   // Semantic — red ONLY for live / danger
   live: "#E11D2E",
   success: "#2F9E6E",
-  warning: "#C9A227",
+  warning: "#D4AF37",
   danger: "#E11D2E",
-  info: "#3D7EEA",
+  info: "#0063E5",
 
   // Text
-  textPrimary: "#F5F7FA",
-  textSecondary: "#C5CDD8",
-  textMuted: "#8B95A5",
-  textInverse: "#07090D",
-  textOnAccent: "#F5F7FA",
+  textPrimary: "#F7F8FC",
+  textSecondary: "#C8D0E0",
+  textMuted: "#8E9BB3",
+  textInverse: "#03060F",
+  textOnAccent: "#FFFFFF",
 } as const;
 
 export const typography = {
   fontFamily: {
-    sans: '"Source Sans 3", "Segoe UI", system-ui, sans-serif',
-    display: '"Source Sans 3", "Segoe UI", system-ui, sans-serif',
+    sans: '"Nunito Sans", "Segoe UI", system-ui, sans-serif',
+    display: '"Playfair Display", "Times New Roman", serif',
     mono: '"SF Mono", ui-monospace, monospace',
   },
   fontSize: {
@@ -113,41 +114,41 @@ export const spacing = {
 
 export const radii = {
   none: 0,
-  sm: 2,
-  md: 4,
-  lg: 6,
-  xl: 8,
-  "2xl": 12,
+  sm: 4,
+  md: 8,
+  lg: 12,
+  xl: 16,
+  "2xl": 22,
   full: 9999,
 } as const;
 
 export const shadows = {
   none: "none",
-  sm: "0 1px 2px rgba(0, 0, 0, 0.4)",
-  md: "0 4px 12px rgba(0, 0, 0, 0.45)",
-  lg: "0 8px 24px rgba(0, 0, 0, 0.5)",
-  glowAccent: "none",
+  sm: "0 2px 8px rgba(0, 0, 0, 0.35)",
+  md: "0 8px 24px rgba(0, 0, 0, 0.45)",
+  lg: "0 16px 40px rgba(0, 0, 0, 0.55)",
+  glowAccent: "0 0 24px rgba(0, 99, 229, 0.35)",
   rn: {
     sm: {
       shadowColor: "#000",
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.4,
-      shadowRadius: 2,
-      elevation: 2,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.35,
+      shadowRadius: 6,
+      elevation: 3,
     },
     md: {
       shadowColor: "#000",
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.45,
-      shadowRadius: 8,
-      elevation: 6,
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.4,
+      shadowRadius: 12,
+      elevation: 8,
     },
     lg: {
       shadowColor: "#000",
-      shadowOffset: { width: 0, height: 8 },
+      shadowOffset: { width: 0, height: 12 },
       shadowOpacity: 0.5,
-      shadowRadius: 16,
-      elevation: 10,
+      shadowRadius: 20,
+      elevation: 12,
     },
   },
 } as const;
@@ -212,10 +213,10 @@ export const motion = {
   easingStandard: easings.standard,
   easingEnter: easings.enter,
   easingExit: easings.exit,
-  cardHoverScale: 1.015,
+  cardHoverScale: 1.03,
   cardPressedScale: 0.985,
-  tvFocusScale: 1.04,
-  imageZoomHover: 1.025,
+  tvFocusScale: 1.05,
+  imageZoomHover: 1.05,
   pageTranslateY: 6,
   heroTranslateY: 8,
   messageTranslateY: 4,

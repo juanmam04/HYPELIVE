@@ -9,14 +9,7 @@ import { ChannelCard } from "@/components/content/ChannelCard";
 import { ProgramCard } from "@/components/content/ProgramCard";
 import { EpisodeCard } from "@/components/content/EpisodeCard";
 import { ContentRow } from "@/components/ui/ContentRow";
-import {
-  HeroSkeleton,
-  StreamRowSkeleton,
-  ChannelRowSkeleton,
-  ProgramRowSkeleton,
-  EpisodeRowSkeleton,
-  ScheduleSkeleton,
-} from "@/components/ui/ContentSkeletons";
+import { PageLoader } from "@/components/ui/PageLoader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LiveBadge } from "@/components/ui/LiveBadge";
@@ -39,7 +32,9 @@ function SectionHeader({
 }) {
   return (
     <div className="mb-3 flex items-end justify-between gap-3">
-      <h2 className="text-lg font-bold text-text-primary sm:text-xl">{title}</h2>
+      <h2 className="font-display text-xl font-semibold tracking-tight text-text-primary sm:text-2xl">
+        {title}
+      </h2>
       {href ? (
         <Link
           href={href}
@@ -79,26 +74,15 @@ export default function HomePage() {
 
   return (
     <StreamingShell>
-      {query.isLoading ? (
-        <div className="space-y-8">
-          <HeroSkeleton />
-          <div className="space-y-8 px-4 sm:px-8 lg:px-12">
-            <StreamRowSkeleton />
-            <ChannelRowSkeleton />
-            <ProgramRowSkeleton />
-            <EpisodeRowSkeleton />
-            <ScheduleSkeleton />
-          </div>
-        </div>
-      ) : null}
+      {!feed && query.isPending ? <PageLoader /> : null}
 
-      {query.isError ? (
+      {query.isError && !feed ? (
         <div className="px-4 py-10 sm:px-8">
           <ErrorState onRetry={() => void query.refetch()} />
         </div>
       ) : null}
 
-      {feed && !query.isLoading ? (
+      {feed ? (
         <>
           <section className="relative h-[min(58vh,560px)] min-h-[360px] w-full overflow-hidden">
             <div
@@ -127,7 +111,7 @@ export default function HomePage() {
                   ) : null}
                 </div>
 
-                <h1 className="mt-3 text-3xl font-bold leading-tight text-text-primary sm:text-4xl lg:text-5xl">
+                <h1 className="font-display mt-3 text-3xl font-semibold leading-[1.12] tracking-tight text-text-primary sm:text-4xl lg:text-5xl">
                   {featured?.title ?? "Transmisión destacada"}
                 </h1>
 

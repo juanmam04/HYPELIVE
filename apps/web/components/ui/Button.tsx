@@ -17,9 +17,9 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-accent text-text-on-accent hover:bg-accent-hover disabled:bg-accent/40 shadow-sm hover:shadow-soft",
+    "bg-accent text-text-on-accent hover:bg-accent-hover disabled:bg-accent/40 shadow-glow hover:shadow-soft",
   secondary:
-    "bg-elevated text-text-primary hover:bg-slate border border-border hover:border-ash/40",
+    "bg-elevated/90 text-text-primary hover:bg-slate border border-border hover:border-accent-soft/40 backdrop-blur-sm",
   ghost:
     "bg-transparent text-text-secondary hover:bg-elevated hover:text-text-primary",
   danger: "bg-live text-white hover:bg-live/90",
@@ -28,9 +28,9 @@ const variants: Record<Variant, string> = {
 };
 
 const sizes: Record<Size, string> = {
-  sm: "h-8 min-h-8 px-3 text-sm gap-1.5 rounded",
-  md: "h-10 min-h-10 px-4 text-sm gap-2 rounded",
-  lg: "h-11 min-h-11 px-5 text-base gap-2 rounded",
+  sm: "h-8 min-h-8 px-3.5 text-sm gap-1.5 rounded-lg",
+  md: "h-10 min-h-10 px-5 text-sm gap-2 rounded-xl",
+  lg: "h-12 min-h-12 px-6 text-base gap-2 rounded-xl",
 };
 
 const toneRing: Record<Tone, string> = {

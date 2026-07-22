@@ -6,7 +6,7 @@ import { homeFeedQueryOptions } from "@hypelive/api";
 import { StreamingShell } from "@/components/layout/StreamingShell";
 import { ChannelCard } from "@/components/content/ChannelCard";
 import { SearchInput } from "@/components/ui/SearchInput";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { PageLoader } from "@/components/ui/PageLoader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { apiOptions } from "@/lib/api-options";
@@ -61,19 +61,13 @@ export default function CanalesPage() {
             />
           </div>
 
-          {query.isLoading ? (
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-20 rounded" />
-              ))}
-            </div>
-          ) : null}
+          {!feed && query.isPending ? <PageLoader /> : null}
 
-          {query.isError ? (
+          {query.isError && !feed ? (
             <ErrorState onRetry={() => void query.refetch()} />
           ) : null}
 
-          {feed && !query.isLoading ? (
+          {feed ? (
             channels.length === 0 ? (
               <EmptyState title="Sin canales" />
             ) : (

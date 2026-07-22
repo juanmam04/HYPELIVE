@@ -10,13 +10,13 @@ type BrandLogoProps = {
 };
 
 const sizes = {
-  sm: { mark: "h-6 w-6", word: "h-4 w-[88px]", text: "text-[15px]" },
-  md: { mark: "h-7 w-7", word: "h-5 w-[110px]", text: "text-[19px]" },
-  lg: { mark: "h-10 w-10", word: "h-7 w-[152px]", text: "text-[26px]" },
+  sm: { mark: "h-7 w-7", text: "text-[1.35rem]" },
+  md: { mark: "h-8 w-8", text: "text-[1.65rem]" },
+  lg: { mark: "h-11 w-11", text: "text-[2.15rem]" },
 } as const;
 
 /**
- * Brand lockup — typographic wordmark (no fragile composite SVG letters).
+ * Cinematic HYPE lockup — theatrical display type + gold spark (Disney+-inspired).
  */
 export function BrandLogo({
   href = "/",
@@ -27,11 +27,14 @@ export function BrandLogo({
   const s = sizes[size];
 
   const content = (
-    <span className={cn("inline-flex items-center select-none", className)}>
+    <span className={cn("inline-flex items-center gap-2.5 select-none", className)}>
       {markOnly ? (
         <BrandMark className={s.mark} />
       ) : (
-        <BrandWordmark className={s.text} />
+        <>
+          <BrandMark className={s.mark} />
+          <BrandWordmark className={s.text} />
+        </>
       )}
     </span>
   );
@@ -49,35 +52,47 @@ export function BrandLogo({
   );
 }
 
-/** Compact monogram — H with accent crossbar. */
+/** Crest mark — rounded tile with H + gold crossbar. */
 export function BrandMark({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 40 40"
-      className={cn("shrink-0 text-text-primary", className)}
+      className={cn("shrink-0 drop-shadow-[0_0_12px_rgba(0,99,229,0.35)]", className)}
       aria-hidden
     >
-      <rect x="8" y="6" width="5.5" height="28" fill="currentColor" />
-      <rect x="26.5" y="6" width="5.5" height="28" fill="currentColor" />
-      <rect x="13.5" y="17" width="13" height="6" fill="#3D7EEA" />
+      <defs>
+        <linearGradient id="hypeMarkBg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#0063E5" />
+          <stop offset="100%" stopColor="#0A3F9A" />
+        </linearGradient>
+      </defs>
+      <rect width="40" height="40" rx="11" fill="url(#hypeMarkBg)" />
+      <path
+        fill="#F7F8FC"
+        d="M11 9h5.2v8.4h7.6V9H29v22h-5.2v-8.6h-7.6V31H11V9z"
+      />
+      <rect x="16.2" y="16.2" width="7.6" height="5.2" fill="#D4AF37" />
     </svg>
   );
 }
 
-/**
- * Wordmark — real type, not path-built letters.
- * Accent: first letter in brand blue (stable, network-readable).
- */
+/** Wordmark — Playfair display, gold spark under H. */
 export function BrandWordmark({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-baseline font-extrabold uppercase leading-none tracking-[-0.045em] text-text-primary",
+        "font-display relative inline-block leading-none tracking-[-0.03em] text-text-primary",
         className,
       )}
       aria-hidden
     >
-      <span className="text-accent">H</span>
+      <span className="relative">
+        H
+        <span
+          className="absolute -bottom-1 left-0 h-[2px] w-full rounded-full bg-gradient-to-r from-amber via-accent to-transparent"
+          aria-hidden
+        />
+      </span>
       <span>YPE</span>
     </span>
   );

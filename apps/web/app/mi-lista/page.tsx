@@ -7,7 +7,7 @@ import { BookmarkCheck } from "lucide-react";
 import { StreamingShell } from "@/components/layout/StreamingShell";
 import { EpisodeCard } from "@/components/content/EpisodeCard";
 import { Button } from "@/components/ui/Button";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { PageLoader } from "@/components/ui/PageLoader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Thumbnail } from "@/components/ui/Thumbnail";
@@ -65,11 +65,7 @@ export default function MiListaPage() {
 
           {tab === "saved" ? (
             !watchlist.hydrated ? (
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <Skeleton key={i} className="aspect-video rounded" />
-                ))}
-              </div>
+              <PageLoader className="min-h-[28vh]" />
             ) : watchlist.items.length === 0 ? (
               <EmptyState
                 title="Nada guardado todavía"
@@ -138,17 +134,13 @@ export default function MiListaPage() {
             </div>
           ) : (
             <>
-              {query.isLoading ? (
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                  {Array.from({ length: 4 }).map((_, i) => (
-                    <Skeleton key={i} className="aspect-video rounded" />
-                  ))}
-                </div>
+              {!feed && query.isPending ? (
+                <PageLoader className="min-h-[28vh]" />
               ) : null}
-              {query.isError ? (
+              {query.isError && !feed ? (
                 <ErrorState onRetry={() => void query.refetch()} />
               ) : null}
-              {feed && !query.isLoading ? (
+              {feed ? (
                 feed.continueWatching.length === 0 ? (
                   <EmptyState
                     title="Sin progreso todavía"

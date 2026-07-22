@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { homeFeedQueryOptions } from "@hypelive/api";
 import { StreamingShell } from "@/components/layout/StreamingShell";
 import { ContentCard } from "@/components/content/ContentCard";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { PageLoader } from "@/components/ui/PageLoader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LiveBadge } from "@/components/ui/LiveBadge";
@@ -25,22 +25,13 @@ export default function EnVivoPage() {
     <StreamingShell>
       <div className="px-4 py-6 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl space-y-10">
-          {query.isLoading ? (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <Skeleton key={i} className="aspect-video rounded" />
-                ))}
-              </div>
-              <Skeleton className="h-48 w-full rounded" />
-            </div>
-          ) : null}
+          {!feed && query.isPending ? <PageLoader /> : null}
 
-          {query.isError ? (
+          {query.isError && !feed ? (
             <ErrorState onRetry={() => void query.refetch()} />
           ) : null}
 
-          {feed && !query.isLoading ? (
+          {feed ? (
             <>
               <section>
                 <h2 className="mb-4 text-xl font-bold text-text-primary sm:text-2xl">

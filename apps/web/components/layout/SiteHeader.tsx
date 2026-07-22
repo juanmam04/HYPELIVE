@@ -9,7 +9,7 @@ export function SiteHeader() {
   const { user, signOutUser } = useAuth();
 
   return (
-    <header className="sticky top-0 z-[200] border-b border-white/5 bg-ink/95">
+    <header className="sticky top-0 z-[200] border-b border-white/[0.06] bg-gradient-to-b from-ink via-ink/90 to-ink/70 backdrop-blur-xl">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:h-16 sm:px-6">
         <BrandLogo href="/home" size="md" />
         <div className="flex items-center gap-2">

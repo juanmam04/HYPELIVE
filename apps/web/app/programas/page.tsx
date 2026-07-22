@@ -6,7 +6,7 @@ import { homeFeedQueryOptions } from "@hypelive/api";
 import { StreamingShell } from "@/components/layout/StreamingShell";
 import { ProgramCard } from "@/components/content/ProgramCard";
 import { SearchInput } from "@/components/ui/SearchInput";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { PageLoader } from "@/components/ui/PageLoader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { apiOptions } from "@/lib/api-options";
@@ -71,19 +71,13 @@ export default function ProgramasPage() {
             </div>
           </div>
 
-          {query.isLoading ? (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <Skeleton key={i} className="aspect-video rounded" />
-              ))}
-            </div>
-          ) : null}
+          {!feed && query.isPending ? <PageLoader /> : null}
 
-          {query.isError ? (
+          {query.isError && !feed ? (
             <ErrorState onRetry={() => void query.refetch()} />
           ) : null}
 
-          {feed && !query.isLoading ? (
+          {feed ? (
             programs.length === 0 ? (
               <EmptyState title="Sin programas" />
             ) : (

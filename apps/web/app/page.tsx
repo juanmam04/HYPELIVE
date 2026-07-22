@@ -9,7 +9,7 @@ import { ContentCard } from "@/components/content/ContentCard";
 import { ChannelCard } from "@/components/content/ChannelCard";
 import { ProgramCard } from "@/components/content/ProgramCard";
 import { EpisodeCard } from "@/components/content/EpisodeCard";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { PageLoader } from "@/components/ui/PageLoader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LiveBadge } from "@/components/ui/LiveBadge";
@@ -56,24 +56,15 @@ export default function LandingPage() {
 
   return (
     <StreamingShell>
-      {query.isLoading ? (
-        <div className="space-y-4 px-4 pt-0 sm:px-8 lg:px-12">
-          <Skeleton className="h-[58vh] w-full max-h-[580px]" />
-          <div className="flex gap-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-36 w-56 shrink-0" />
-            ))}
-          </div>
-        </div>
-      ) : null}
+      {!feed && query.isPending ? <PageLoader /> : null}
 
-      {query.isError ? (
+      {query.isError && !feed ? (
         <div className="px-4 py-10 sm:px-8">
           <ErrorState onRetry={() => void query.refetch()} />
         </div>
       ) : null}
 
-      {feed && !query.isLoading ? (
+      {feed ? (
         <>
           <section className="relative h-[min(58vh,560px)] min-h-[360px] w-full overflow-hidden">
             <div
@@ -93,7 +84,7 @@ export default function LandingPage() {
                   <BrandLogo href={undefined} size="sm" />
                 </div>
 
-                <h1 className="mt-3 text-3xl font-bold leading-tight text-text-primary sm:text-4xl lg:text-5xl">
+                <h1 className="font-display mt-3 text-3xl font-semibold leading-[1.12] tracking-tight text-text-primary sm:text-4xl lg:text-5xl">
                   {featured?.title ?? "Streaming en vivo de tus canales"}
                 </h1>
 

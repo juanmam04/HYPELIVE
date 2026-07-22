@@ -2,8 +2,8 @@ import type { ExpoConfig, ConfigContext } from "expo/config";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: "HYPE",
-  slug: "hype",
+  name: "Disney Streaming",
+  slug: "disney-streaming",
   version: "0.0.1",
   orientation: "portrait",
   scheme: "hypelive",
@@ -28,7 +28,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     typedRoutes: true,
   },
   extra: {
-    brandName: "HYPE",
-    brandSlug: "hype",
+    brandName: "Disney Streaming",
+    brandSlug: "disney-streaming",
   },
 });

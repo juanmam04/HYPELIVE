@@ -10,13 +10,13 @@ type BrandLogoProps = {
 };
 
 const sizes = {
-  sm: { mark: "h-6 w-6", word: "h-4 w-[88px]", text: "text-[15px]" },
-  md: { mark: "h-7 w-7", word: "h-5 w-[110px]", text: "text-[19px]" },
-  lg: { mark: "h-10 w-10", word: "h-7 w-[152px]", text: "text-[26px]" },
+  sm: { mark: "h-6 w-6", disney: "text-[22px]", streaming: "text-[8px]" },
+  md: { mark: "h-7 w-7", disney: "text-[26px]", streaming: "text-[9px]" },
+  lg: { mark: "h-10 w-10", disney: "text-[34px]", streaming: "text-[11px]" },
 } as const;
 
 /**
- * Brand lockup — typographic wordmark (no fragile composite SVG letters).
+ * Disney Streaming lockup — Mickey mark + Disney script wordmark.
  */
 export function BrandLogo({
   href = "/",
@@ -27,11 +27,14 @@ export function BrandLogo({
   const s = sizes[size];
 
   const content = (
-    <span className={cn("inline-flex items-center select-none", className)}>
+    <span className={cn("inline-flex items-center gap-2.5 select-none", className)}>
       {markOnly ? (
         <BrandMark className={s.mark} />
       ) : (
-        <BrandWordmark className={s.text} />
+        <>
+          <BrandMark className={s.mark} />
+          <BrandWordmark disneyClass={s.disney} streamingClass={s.streaming} />
+        </>
       )}
     </span>
   );
@@ -49,7 +52,7 @@ export function BrandLogo({
   );
 }
 
-/** Compact monogram — H with accent crossbar. */
+/** Mickey mouse head monogram. */
 export function BrandMark({ className }: { className?: string }) {
   return (
     <svg
@@ -57,28 +60,46 @@ export function BrandMark({ className }: { className?: string }) {
       className={cn("shrink-0 text-text-primary", className)}
       aria-hidden
     >
-      <rect x="8" y="6" width="5.5" height="28" fill="currentColor" />
-      <rect x="26.5" y="6" width="5.5" height="28" fill="currentColor" />
-      <rect x="13.5" y="17" width="13" height="6" fill="#3D7EEA" />
+      <circle cx="20" cy="24" r="11" fill="currentColor" />
+      <circle cx="9.5" cy="12.5" r="7.2" fill="currentColor" />
+      <circle cx="30.5" cy="12.5" r="7.2" fill="currentColor" />
     </svg>
   );
 }
 
 /**
- * Wordmark — real type, not path-built letters.
- * Accent: first letter in brand blue (stable, network-readable).
+ * Disney script wordmark + STREAMING.
  */
-export function BrandWordmark({ className }: { className?: string }) {
+export function BrandWordmark({
+  className,
+  disneyClass,
+  streamingClass,
+}: {
+  className?: string;
+  disneyClass?: string;
+  streamingClass?: string;
+}) {
   return (
     <span
-      className={cn(
-        "inline-flex items-baseline font-extrabold uppercase leading-none tracking-[-0.045em] text-text-primary",
-        className,
-      )}
+      className={cn("inline-flex items-baseline gap-2 leading-none", className)}
       aria-hidden
     >
-      <span className="text-accent">H</span>
-      <span>YPE</span>
+      <span
+        className={cn(
+          "font-[family-name:var(--font-disney)] italic font-normal tracking-tight text-text-primary",
+          disneyClass,
+        )}
+      >
+        Disney
+      </span>
+      <span
+        className={cn(
+          "font-bold uppercase tracking-[0.22em] text-text-primary translate-y-[-1px]",
+          streamingClass,
+        )}
+      >
+        Streaming
+      </span>
     </span>
   );
 }

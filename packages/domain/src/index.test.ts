@@ -70,10 +70,10 @@ describe("formatters", () => {
 });
 
 describe("branding", () => {
-  it("exposes HYPE brand constants", () => {
-    expect(APP_NAME).toBe("HYPE");
-    expect(BRAND_NAME).toBe("HYPE");
-    expect(BRAND_SLUG).toBe("hype");
+  it("exposes Disney Streaming brand constants", () => {
+    expect(APP_NAME).toBe("Disney Streaming");
+    expect(BRAND_NAME).toBe("Disney Streaming");
+    expect(BRAND_SLUG).toBe("disney-streaming");
   });
 });
 
